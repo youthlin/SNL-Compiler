@@ -1,4 +1,4 @@
-package com.youthlin.snl.compiler.frontend.grammarparser.recursivedescent;
+package com.youthlin.snl.compiler.frontend.grammarparser;
 
 /**
  * Created by lin on 2016-05-28-028.

@@ -1,7 +1,7 @@
 package com.youthlin.snl.compiler.frontend.grammarparser.test;
 
 import com.youthlin.snl.compiler.frontend.grammarparser.GrammarTree;
-import com.youthlin.snl.compiler.frontend.grammarparser.recursivedescent.TreeNode;
+import com.youthlin.snl.compiler.frontend.grammarparser.TreeNode;
 import org.junit.Before;
 import org.junit.Test;
 

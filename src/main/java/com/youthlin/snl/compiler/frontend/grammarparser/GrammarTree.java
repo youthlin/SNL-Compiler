@@ -1,7 +1,5 @@
 package com.youthlin.snl.compiler.frontend.grammarparser;
 
-import com.youthlin.snl.compiler.frontend.grammarparser.recursivedescent.TreeNode;
-
 /**
  * Created by lin on 2016-05-28-028.
  * 语法树
