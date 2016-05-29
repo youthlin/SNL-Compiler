@@ -13,6 +13,10 @@ public class Token {
     public Token() {
     }
 
+    public Token(TokenType type) {
+        this.type = type;
+    }
+
     public Token(int line, int column, TokenType type, String value) {
         this.line = line;
         this.column = column;
@@ -83,7 +87,8 @@ public class Token {
 
     @Override
     public String toString() {
-        return "[line=" + line + ",column=" + column + ",type=" + type + ",value=" + value + "]";
+//        return "[line=" + line + ",column=" + column + ",type=" + type + ",value=" + value + "]";
+        return "[" + value + "|" + type + "|" + line + ":" + column + "]";
     }
 
     public int getLine() {

@@ -16,7 +16,7 @@ public enum TokenType {
     /*类型*/
     INTEGER("integer"), CHAR("char"),
 
-    ID("id"), INTNUM("intNumber"), CHARACTER("character"),
+    ID("id"), INTC("intc"), CHARACTER("character"),
 
     /*特殊符号*/
     ASSIGN(":="), EQ("="), LT("<"),

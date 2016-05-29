@@ -18,7 +18,6 @@ public class GrammarTreeTest {
         TreeNode root = new TreeNode();
         tree.setRoot(root);
         int childCount = 3;
-        root.setChildCount(childCount);
         TreeNode t1 = new TreeNode();
         TreeNode t2 = new TreeNode();
         TreeNode t3 = new TreeNode();
@@ -29,7 +28,6 @@ public class GrammarTreeTest {
         t2.setValue("<DeclarePart>");
         t3.setValue("<ProgramBody>");
 
-        t1.setChildCount(2);
         TreeNode t4 = new TreeNode();
         TreeNode t5 = new TreeNode();
         children = new TreeNode[]{t4, t5};
@@ -37,7 +35,6 @@ public class GrammarTreeTest {
         t4.setValue("program");
         t5.setValue("<ProgramName>");
 
-        t5.setChildCount(1);
         t4 = new TreeNode();
         t4.setValue("p");
         t5.setChild(new TreeNode[]{t4});

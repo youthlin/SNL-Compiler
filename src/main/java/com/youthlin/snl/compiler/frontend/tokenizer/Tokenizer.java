@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -183,7 +182,7 @@ public class Tokenizer {
                     if (!isDigit(ch)) {
                         //数字识别完成
                         unGetChar(sb.charAt(sb.length() - 1));
-                        token = new Token(line, column, TokenType.INTNUM, sb.substring(0, sb.length() - 1));
+                        token = new Token(line, column, TokenType.INTC, sb.substring(0, sb.length() - 1));
                         LOG.debug("已识别Token:" + token);
                         return token;
                     }
@@ -248,7 +247,7 @@ public class Tokenizer {
             LOG.debug("已识别Token:" + token);
             return token;
         }
-        if (state == State.Error) {
+        if (state != State.Normal) {
             errors.add("[错误]在 " + line + "行 " + column + "列");
         }//endregion
         return null;
@@ -256,7 +255,7 @@ public class Tokenizer {
 
     public List<Token> getTokenList() throws IOException {
         errors = new ArrayList<>();
-        List<Token> list = new LinkedList<>();
+        List<Token> list = new ArrayList<>();
         Token token = getToken();
         while (token != null) {
             list.add(token);

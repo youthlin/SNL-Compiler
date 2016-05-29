@@ -1,10 +1,11 @@
-program p{传说中的注释}10type t = integer;
+program p{传说中的注释}type t = integer;
     var t v1;
     char v2;
 begin
     read(v1);
     v1 := v1 + 10;
     write('a')
-    "abc"
+    {"abc"}
     write(v1)
 end.
+

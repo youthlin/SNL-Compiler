@@ -5,18 +5,24 @@ package com.youthlin.snl.compiler.frontend.grammarparser;
  * 语法树节点
  */
 public class TreeNode {
-    private int childCount;
     private TreeNode parent;
     private TreeNode[] child;
     private boolean isLeaf;
     private String value;
 
-    public int getChildCount() {
-        return childCount;
+    public TreeNode() {
+        this("");
     }
 
-    public void setChildCount(int childCount) {
-        this.childCount = childCount;
+    public TreeNode(String value) {
+        this(null, null, false, value);
+    }
+
+    public TreeNode(TreeNode parent, TreeNode[] child, boolean isLeaf, String value) {
+        this.parent = parent;
+        this.child = child;
+        this.isLeaf = isLeaf;
+        this.value = value;
     }
 
     public TreeNode getParent() {
@@ -31,8 +37,8 @@ public class TreeNode {
         return child;
     }
 
-    public void setChild(TreeNode[] child) {
-        this.child = child;
+    public void setChild(TreeNode... nodes) {
+        this.child = nodes;
     }
 
     public boolean isLeaf() {
