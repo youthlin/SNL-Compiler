@@ -88,7 +88,7 @@ public class Token {
     @Override
     public String toString() {
 //        return "[line=" + line + ",column=" + column + ",type=" + type + ",value=" + value + "]";
-        return "[" + value + "|" + type + "|" + line + ":" + column + "]";
+        return "`" + value + "|" + type + "|" + line + ":" + column + "`";
     }
 
     public int getLine() {

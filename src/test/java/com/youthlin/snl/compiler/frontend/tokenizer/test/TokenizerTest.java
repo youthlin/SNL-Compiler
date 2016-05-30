@@ -2,6 +2,7 @@ package com.youthlin.snl.compiler.frontend.tokenizer.test;
 
 import com.youthlin.snl.compiler.frontend.tokenizer.Token;
 import com.youthlin.snl.compiler.frontend.tokenizer.TokenType;
+import com.youthlin.snl.compiler.frontend.tokenizer.TokenizationResult;
 import com.youthlin.snl.compiler.frontend.tokenizer.Tokenizer;
 import org.junit.After;
 import org.junit.Assert;
@@ -27,12 +28,17 @@ public class TokenizerTest {
 
     @Test
     public void test() throws IOException {
-        List<Token> list = tokenizer.getTokenList();
-        Assert.assertTrue(list.size() > 0);
-        for (Token t : list) {
-            if (t.getValue() != null && t.getValue().equals(TokenType.PROGRAM.getStr())) {
-                Assert.assertEquals(TokenType.PROGRAM, t.getType());
+        TokenizationResult result = tokenizer.tokenize();
+        if (result.getErrors().size() == 0) {
+            List<Token> list = result.getTokenList();
+            Assert.assertTrue(list.size() > 0);
+            for (Token t : list) {
+                if (t.getValue() != null && t.getValue().equals(TokenType.PROGRAM.getStr())) {
+                    Assert.assertEquals(TokenType.PROGRAM, t.getType());
+                }
             }
+        } else {
+            Assert.assertTrue(result.getErrors().size() > 0);
         }
     }
 

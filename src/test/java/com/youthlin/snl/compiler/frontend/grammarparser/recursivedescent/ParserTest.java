@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.InputStream;
+import java.io.PrintWriter;
 
 /**
  * Created by lin on 2016-05-29-029.
@@ -17,7 +18,7 @@ public class ParserTest {
 
     @Before
     public void init() {
-        InputStream in = ParserTest.class.getClassLoader().getResourceAsStream("test.snl");
+        InputStream in = ParserTest.class.getClassLoader().getResourceAsStream("sd.snl");
         parser = new Parser(in);
     }
 
@@ -25,10 +26,11 @@ public class ParserTest {
     public void test() {
         ParseResult result = parser.parse();
         if (result.isSuccess()) {
-            TreeNode root = parser.parse().getRoot();
+            TreeNode root = result.getRoot();
             GrammarTree tree = new GrammarTree();
             tree.setRoot(root);
             tree.preOrder(root);
+            GrammarTree.print(root, new PrintWriter(System.out), "Tree:", 5);
         } else {
             System.err.println("Parser Error!");
             result.getErrors().forEach(System.err::println);

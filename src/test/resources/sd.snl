@@ -1,0 +1,28 @@
+{值参、变参结合功能测试}
+program sd
+    var integer x,y,z;
+procedure f(integer x,y;var integer z);
+begin
+	z:=x+y+z;
+	write(x);
+	write(y);
+	write(z)
+end
+
+begin
+    x:=3;
+    y:=4;
+    z:=5;
+    f(x,y,z);
+    write(x);
+    write(y);
+    write(z);
+    f(6,x+y+z,y);
+    write(x);
+    write(y);
+    write(z);
+    f(x+y,y/x,x);
+    write(x);
+    write(y);
+    write(z)
+end.

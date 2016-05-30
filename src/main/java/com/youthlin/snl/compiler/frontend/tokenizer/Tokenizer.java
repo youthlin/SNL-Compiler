@@ -253,7 +253,8 @@ public class Tokenizer {
         return null;
     }
 
-    public List<Token> getTokenList() throws IOException {
+    public TokenizationResult tokenize() throws IOException {
+        TokenizationResult result = new TokenizationResult();
         errors = new ArrayList<>();
         List<Token> list = new ArrayList<>();
         Token token = getToken();
@@ -261,17 +262,12 @@ public class Tokenizer {
             list.add(token);
             token = getToken();
         }
-        StringBuilder sb = new StringBuilder("【");
-        for (String s : errors) {
-            LOG.info(s);
-            sb.append(s);
-            sb.append(",");
+        result.setTokenList(list);
+        result.setErrors(errors);
+        for (String error : errors) {
+            LOG.warn(error);
         }
-        sb.append("】");
-        if (errors.size() > 0) {
-            throw new TokenizationException(sb.toString());
-        }
-        return list;
+        return result;
     }
 
     public static String getSourceFileAsString(InputStream in) {
@@ -288,18 +284,24 @@ public class Tokenizer {
         InputStream in = Tokenizer.class.getClassLoader().getResourceAsStream("p.snl");
         Tokenizer tokenizer = new Tokenizer(in);
         try {
-            List<Token> list = tokenizer.getTokenList();
-            System.out.println();
-            if (list.size() > 0) {
-                System.out.printf("[ 行:列 ]|【 语义信息 】| 词法信息 \n");
-                System.out.printf("---------+--------------+----------\n");
-            }
-            for (Token t : list) {
-                System.out.printf("[%3d:%-3d]|【%10s】|%10s\n", t.line, t.column, t.value, t.type.getStr());
-            }
-            if (list.size() > 0) {
-                System.out.printf("---------+--------------+----------\n");
-                System.out.printf("[ 行:列 ]|【 语义信息 】| 词法信息 \n");
+            TokenizationResult result = tokenizer.tokenize();
+            if (result.getErrors().size() == 0) {
+                List<Token> list = result.getTokenList();
+                System.out.println();
+                if (list.size() > 0) {
+                    System.out.printf("[ 行:列 ]|【 语义信息 】| 词法信息 \n");
+                    System.out.printf("---------+--------------+----------\n");
+                }
+                for (Token t : list) {
+                    System.out.printf("[%3d:%-3d]|【%10s】|%10s\n", t.line, t.column, t.value, t.type.getStr());
+                }
+                if (list.size() > 0) {
+                    System.out.printf("---------+--------------+----------\n");
+                    System.out.printf("[ 行:列 ]|【 语义信息 】| 词法信息 \n");
+                }
+            } else {
+                System.err.println("词法分析错误");
+                result.getErrors().forEach(System.err::println);
             }
         } catch (IOException e) {
             e.printStackTrace();

@@ -5,5 +5,5 @@ package com.youthlin.snl.compiler.frontend.grammarparser;
  * 语法分析器
  */
 public interface GrammarParser {
-
+    ParseResult parse();
 }

@@ -22,7 +22,8 @@ public enum TokenType {
     ASSIGN(":="), EQ("="), LT("<"),
     PLUS("+"), MINUS("-"), TIMES("*"), OVER("/"),
     LPAREN("("), RPAREN(")"), LMIDPAREN("["), RMIDPAREN("]"),
-    UNDERRANGE(".."), SEMI(";"), COMMA(","), DOT("."), COLON(":");
+    UNDERRANGE(".."), SEMI(";"), COMMA(","), DOT("."),
+    COLON(":");
 
     TokenType(String str) {
         this.str = str;
