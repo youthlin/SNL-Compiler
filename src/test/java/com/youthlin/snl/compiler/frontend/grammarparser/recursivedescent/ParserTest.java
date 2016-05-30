@@ -1,6 +1,7 @@
 package com.youthlin.snl.compiler.frontend.grammarparser.recursivedescent;
 
 import com.youthlin.snl.compiler.frontend.grammarparser.GrammarTree;
+import com.youthlin.snl.compiler.frontend.grammarparser.ParseResult;
 import com.youthlin.snl.compiler.frontend.grammarparser.TreeNode;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,7 +23,7 @@ public class ParserTest {
 
     @Test
     public void test() {
-        ParserResult result = parser.parse();
+        ParseResult result = parser.parse();
         if (result.isSuccess()) {
             TreeNode root = parser.parse().getRoot();
             GrammarTree tree = new GrammarTree();

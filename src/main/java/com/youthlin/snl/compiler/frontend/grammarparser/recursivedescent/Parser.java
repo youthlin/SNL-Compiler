@@ -1,6 +1,7 @@
 package com.youthlin.snl.compiler.frontend.grammarparser.recursivedescent;
 
 import com.youthlin.snl.compiler.frontend.grammarparser.GrammarParser;
+import com.youthlin.snl.compiler.frontend.grammarparser.ParseResult;
 import com.youthlin.snl.compiler.frontend.grammarparser.TreeNode;
 import com.youthlin.snl.compiler.frontend.tokenizer.Token;
 import com.youthlin.snl.compiler.frontend.tokenizer.TokenType;
@@ -43,9 +44,9 @@ public class Parser implements GrammarParser {
         }
     }
 
-    public ParserResult parse() {
+    public ParseResult parse() {
         errors.clear();
-        ParserResult result = new ParserResult();
+        ParseResult result = new ParseResult();
         TreeNode root = program();
         result.setRoot(root);
         if (getToken() != null) { //此时输入流中应该为空
