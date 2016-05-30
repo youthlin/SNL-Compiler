@@ -1,11 +1,5 @@
-program p{传说中的注释}type t = integer;
-    var t v1;
-    char v2;
+program p
 begin
-    read(v1);
-    v1 := v1 + 10;
-    write('a')
-    {"abc"}
-    write(v1)
+    read(v1){}
 end.
 

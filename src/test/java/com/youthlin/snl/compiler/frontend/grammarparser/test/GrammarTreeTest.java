@@ -17,7 +17,6 @@ public class GrammarTreeTest {
         tree = new GrammarTree();
         TreeNode root = new TreeNode();
         tree.setRoot(root);
-        int childCount = 3;
         TreeNode t1 = new TreeNode();
         TreeNode t2 = new TreeNode();
         TreeNode t3 = new TreeNode();
@@ -37,8 +36,7 @@ public class GrammarTreeTest {
 
         t4 = new TreeNode();
         t4.setValue("p");
-        t5.setChild(new TreeNode[]{t4});
-
+        t5.setChild(t4);
 
     }
 

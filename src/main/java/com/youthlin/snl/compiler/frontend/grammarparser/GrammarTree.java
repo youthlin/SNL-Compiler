@@ -17,10 +17,12 @@ public class GrammarTree {
 
     public void preOrder(TreeNode r) {
         if (r != null) {
-            System.out.print(r.getValue()+" ");
-            int childCount = r.getChild().length;
-            for (int i = 0; i < childCount; i++) {
-                preOrder(r.getChild()[i]);
+            System.out.print(r.getValue() + " ");
+            TreeNode[] children = r.getChild();
+            if (children != null) {
+                for (TreeNode aChildren : children) {
+                    preOrder(aChildren);
+                }
             }
         }
     }

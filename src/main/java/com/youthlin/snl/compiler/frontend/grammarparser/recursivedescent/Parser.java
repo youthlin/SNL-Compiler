@@ -1,8 +1,6 @@
 package com.youthlin.snl.compiler.frontend.grammarparser.recursivedescent;
 
-import com.sun.xml.internal.bind.v2.model.core.ID;
 import com.youthlin.snl.compiler.frontend.grammarparser.GrammarParser;
-import com.youthlin.snl.compiler.frontend.grammarparser.GrammarParserException;
 import com.youthlin.snl.compiler.frontend.grammarparser.TreeNode;
 import com.youthlin.snl.compiler.frontend.tokenizer.Token;
 import com.youthlin.snl.compiler.frontend.tokenizer.TokenType;
@@ -13,9 +11,10 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+
+import static com.youthlin.snl.compiler.frontend.tokenizer.TokenType.*;
 
 /**
  * Created by lin on 2016-05-28-028.
@@ -27,7 +26,7 @@ public class Parser implements GrammarParser {
     private Token lastRead;
     private List<String> errors;
     private static final Logger LOG = LoggerFactory.getLogger(Parser.class);
-    private final Token errorToken = new Token(TokenType.ERROR);
+    private final Token errorToken = new Token(ERROR);
 
     public Parser(InputStream in) {
         errors = new ArrayList<>();
@@ -45,6 +44,7 @@ public class Parser implements GrammarParser {
     }
 
     public ParserResult parse() {
+        errors.clear();
         ParserResult result = new ParserResult();
         TreeNode root = program();
         result.setRoot(root);
@@ -90,15 +90,15 @@ public class Parser implements GrammarParser {
         return token;
     }
 
-    private TreeNode match(String expected) {
+    private TreeNode match(TokenType expected) {
         Token input = getToken();
         TreeNode node = null;
         if (input != null) {
-            if (input.getValue().equals(expected)) {
+            if (input.getType().equals(expected)) {
                 LOG.trace("已匹配" + input);
-                node = node(expected);
+                node = node(expected.getStr());
             } else
-                errors.add("Unexpected token. " + expected + " expected. Near " + input.getValue()
+                errors.add("Unexpected token. " + expected.getStr() + " expected. Near " + input.getValue()
                         + " at [" + input.getLine() + ":" + input.getColumn() + "]");
         } else {
             errors.add("Unexpected EOF. No more tokens at input stream.");
@@ -112,7 +112,7 @@ public class Parser implements GrammarParser {
     private TreeNode program() {
         TreeNode root = node("Program");
         LOG.trace("构造根结点");
-        root.setChild(programHead(), declarePart(), programBody(), match("."));
+        root.setChild(programHead(), declarePart(), programBody(), match(EOF));
         LOG.trace("根结点设置完毕");
         return root;
     }
@@ -123,7 +123,7 @@ public class Parser implements GrammarParser {
     private TreeNode programHead() {
         TreeNode pHead = node("ProgramHead");
         LOG.trace("构造ProgramHead结点");
-        pHead.setChild(match(TokenType.PROGRAM.getStr()), programName());
+        pHead.setChild(match(PROGRAM), programName());
         LOG.trace("ProgramHead结点设置完毕");
         return pHead;
     }
@@ -140,12 +140,12 @@ public class Parser implements GrammarParser {
     }
 
     /**
-     * (57) [ProgramBody] -> begin [StmList] end {begin}
+     * (57) [ProgramBody] -> begin [StmList] end    {begin}
      */
     private TreeNode programBody() {
         TreeNode node = node("ProgramBody");
         LOG.trace("构造ProgramBody结点");
-//TODO        node.setChild(match(TokenType.BEGIN.getStr(),));
+        node.setChild(match(BEGIN), stmList(), match(END));
         LOG.trace("ProgramBody结点设置完毕");
         return node;
     }
@@ -189,7 +189,7 @@ public class Parser implements GrammarParser {
     private TreeNode programName() {
         TreeNode node = node("ProgramName");
         LOG.trace("构造 ProgramName 结点");
-        node.setChild(matchIDINTCHAR(TokenType.ID));
+        node.setChild(matchIDINTCHAR(ID));
         LOG.trace("ProgramName 结点设置完毕");
         return node;
     }
@@ -204,12 +204,12 @@ public class Parser implements GrammarParser {
         Token token = peekToken();
         TokenType type = token.getType();
         TreeNode child = null;
-        if (type.equals(TokenType.VAR) || type.equals(TokenType.PROCEDURE) || type.equals(TokenType.BEGIN)) {
+        if (type.equals(VAR) || type.equals(PROCEDURE) || type.equals(BEGIN)) {
             child = node("Ɛ");
-        } else if (type.equals(TokenType.TYPE)) {
+        } else if (type.equals(TYPE)) {
             child = typeDec();
         } else {
-            error(TokenType.VAR, TokenType.PROCEDURE, TokenType.BEGIN, TokenType.TYPE);
+            error(VAR, PROCEDURE, BEGIN, TYPE);
         }
         node.setChild(child);
         LOG.trace("TypeDecPart 结点设置完毕");
@@ -226,12 +226,12 @@ public class Parser implements GrammarParser {
         Token token = peekToken();
         TokenType type = token.getType();
         TreeNode child = null;
-        if (type.equals(TokenType.PROCEDURE) || type.equals(TokenType.BEGIN)) {
+        if (type.equals(PROCEDURE) || type.equals(BEGIN)) {
             child = node("Ɛ");
-        } else if (type.equals(TokenType.VAR)) {
+        } else if (type.equals(VAR)) {
             child = typeDec();
         } else {
-            error(TokenType.PROCEDURE, TokenType.BEGIN, TokenType.VAR);
+            error(PROCEDURE, BEGIN, VAR);
         }
         LOG.trace("VarDecPart 结点设置完毕");
         node.setChild(child);
@@ -255,12 +255,11 @@ public class Parser implements GrammarParser {
                 node.setChild(procDec());
                 break;
             default:
-                error(TokenType.BEGIN, TokenType.PROCEDURE);
+                error(BEGIN, PROCEDURE);
         }
         LOG.trace("ProcDecPart 结点设置完毕");
         return node;
     }
-
 
     /**
      * (7) [TypeDec] -> type [TypeDecList] {type}
@@ -268,7 +267,7 @@ public class Parser implements GrammarParser {
     private TreeNode typeDec() {
         TreeNode node = node("TypeDec");
         LOG.trace("构造 TypeDec 结点");
-        node.setChild(match(TokenType.TYPE.getStr()), typeDecList());
+        node.setChild(match(TYPE), typeDecList());
         LOG.trace("TypeDec 结点设置完毕");
         return node;
     }
@@ -279,8 +278,8 @@ public class Parser implements GrammarParser {
     private TreeNode typeDecList() {
         TreeNode node = node("TypeDecList");
         LOG.trace("构造 TypeDecList 结点");
-        node.setChild(typeId(), match(TokenType.EQ.getStr()), typeDef(),
-                match(TokenType.SEMI.getStr()), typeDecMore());
+        node.setChild(typeId(), match(EQ), typeDef(),
+                match(SEMI), typeDecMore());
         LOG.trace("TypeDecList 结点设置完毕");
         return node;
     }
@@ -291,7 +290,7 @@ public class Parser implements GrammarParser {
     private TreeNode typeId() {
         TreeNode node = node("TypeID");
         LOG.trace("构造 TypeID 结点");
-        node.setChild(matchIDINTCHAR(TokenType.ID));
+        node.setChild(matchIDINTCHAR(ID));
         LOG.trace("TypeID 结点设置完毕");
         return node;
     }
@@ -316,10 +315,10 @@ public class Parser implements GrammarParser {
                 node.setChild(structureType());
                 break;
             case ID:
-                node.setChild(matchIDINTCHAR(TokenType.ID));
+                node.setChild(matchIDINTCHAR(ID));
                 break;
             default:
-                error(TokenType.INTEGER, TokenType.CHAR, TokenType.ARRAY, TokenType.RECORD, TokenType.ID);
+                error(INTEGER, CHAR, ARRAY, RECORD, ID);
         }
         LOG.trace("TypeDef 结点设置完毕");
         return node;
@@ -344,7 +343,7 @@ public class Parser implements GrammarParser {
                 node.setChild(typeDecList());
                 break;
             default:
-                error(TokenType.VAR, TokenType.PROCEDURE, TokenType.BEGIN, TokenType.ID);
+                error(VAR, PROCEDURE, BEGIN, ID);
         }
         LOG.trace("typeDefMore 结点设置完毕");
         return node;
@@ -356,9 +355,9 @@ public class Parser implements GrammarParser {
     private TreeNode procDec() {
         TreeNode node = node("ProcDec");
         LOG.trace("构造 ProcDec 结点");
-        node.setChild(match(TokenType.PROCEDURE.getStr()), procName(),
-                match(TokenType.LPAREN.getStr()), paramList(), match(TokenType.RPAREN.getStr()),
-                match(TokenType.SEMI.getStr()), procDecPart(), procBody(), procDecMore());
+        node.setChild(match(PROCEDURE), procName(),
+                match(LPAREN), paramList(), match(RPAREN),
+                match(SEMI), procDecPart(), procBody(), procDecMore());
         LOG.trace("ProcDec 结点设置完毕");
         return node;
     }
@@ -374,13 +373,13 @@ public class Parser implements GrammarParser {
         TokenType type = token.getType();
         switch (type) {
             case INTEGER:
-                node.setChild(match(TokenType.INTEGER.getStr()));
+                node.setChild(match(INTEGER));
                 break;
             case CHAR:
-                node.setChild(match(TokenType.CHAR.getStr()));
+                node.setChild(match(CHAR));
                 break;
             default:
-                error(TokenType.INTEGER, TokenType.CHAR);
+                error(INTEGER, CHAR);
         }
         LOG.trace("BaseType 结点设置完毕");
         return node;
@@ -403,7 +402,7 @@ public class Parser implements GrammarParser {
                 node.setChild(recType());
                 break;
             default:
-                error(TokenType.ARRAY, TokenType.RECORD);
+                error(ARRAY, RECORD);
         }
         LOG.trace("StructureType 结点设置完毕");
         return node;
@@ -415,7 +414,7 @@ public class Parser implements GrammarParser {
     private TreeNode procName() {
         TreeNode node = node("ProcName");
         LOG.trace("构造 ProcName 结点");
-        node.setChild(matchIDINTCHAR(TokenType.ID));
+        node.setChild(matchIDINTCHAR(ID));
         LOG.trace("ProcName 结点设置完毕");
         return node;
     }
@@ -431,7 +430,7 @@ public class Parser implements GrammarParser {
         TokenType type = token.getType();
         switch (type) {
             case RPAREN:
-                node.setChild(match(TokenType.RPAREN.getStr()));
+                node.setChild(match(RPAREN));
                 break;
             case INTEGER:
             case CHAR:
@@ -442,8 +441,8 @@ public class Parser implements GrammarParser {
                 node.setChild(paramDecList());
                 break;
             default:
-                error(TokenType.RPAREN, TokenType.INTEGER, TokenType.CHAR, TokenType.ARRAY,
-                        TokenType.RECORD, TokenType.ID, TokenType.VAR);
+                error(RPAREN, INTEGER, CHAR, ARRAY,
+                        RECORD, ID, VAR);
         }
         LOG.trace("ParamList 结点设置完毕");
         return node;
@@ -476,7 +475,7 @@ public class Parser implements GrammarParser {
             case PROCEDURE:
                 node.setChild(procDec());
             default:
-                error(TokenType.BEGIN, TokenType.PROCEDURE);
+                error(BEGIN, PROCEDURE);
         }
         LOG.trace("ProcDecMore 结点设置完毕");
         return node;
@@ -488,9 +487,9 @@ public class Parser implements GrammarParser {
     private TreeNode arrayType() {
         TreeNode node = node("ArrayType");
         LOG.trace("构造 ArrayType 结点");
-        node.setChild(match(TokenType.ARRAY.getStr()), match(TokenType.LMIDPAREN.getStr()), low(),
-                match(TokenType.COLON.getStr()), match(TokenType.COLON.getStr()), top(),
-                match(TokenType.RMIDPAREN.getStr()), match(TokenType.OF.getStr()), baseType());
+        node.setChild(match(ARRAY), match(LMIDPAREN), low(),
+                match(COLON), match(COLON), top(),
+                match(RMIDPAREN), match(OF), baseType());
         LOG.trace("ArrayType 结点设置完毕");
         return node;
     }
@@ -501,7 +500,7 @@ public class Parser implements GrammarParser {
     private TreeNode recType() {
         TreeNode node = node("RecType");
         LOG.trace("构造 RecType 结点");
-        node.setChild(match(TokenType.RECORD.getStr()), filedDecList(), match(TokenType.END.getStr()));
+        node.setChild(match(RECORD), filedDecList(), match(END));
         LOG.trace("RecType 结点设置完毕");
         return node;
     }
@@ -523,7 +522,7 @@ public class Parser implements GrammarParser {
     private TreeNode low() {
         TreeNode node = node("Low");
         LOG.trace("构造 Low 结点");
-        node.setChild(matchIDINTCHAR(TokenType.INTC));
+        node.setChild(matchIDINTCHAR(INTC));
         LOG.trace("Low 结点设置完毕");
         return node;
     }
@@ -534,13 +533,12 @@ public class Parser implements GrammarParser {
     private TreeNode top() {
         TreeNode node = node("Top");
         LOG.trace("构造 Top 结点");
-        node.setChild(matchIDINTCHAR(TokenType.INTC));
+        node.setChild(matchIDINTCHAR(INTC));
         LOG.trace("Top 结点设置完毕");
         return node;
     }
 
     /**
-     * Ɛ
      * (23) [FiledDecList] -> [BaseType] [IdList] ; [FiledDecMore]  {integer,char}
      * (24) [FiledDecList] -> [ArrayType] [IdList];[FiledDecMore]   {array}
      */
@@ -552,13 +550,13 @@ public class Parser implements GrammarParser {
         switch (type) {
             case INTEGER:
             case CHAR:
-                node.setChild(baseType(), idList(), match(TokenType.SEMI.getStr()), filedDecMore());
+                node.setChild(baseType(), idList(), match(SEMI), filedDecMore());
                 break;
             case ARRAY:
                 node.setChild(arrayType(), idList(), filedDecMore());
                 break;
             default:
-                error(TokenType.INTEGER, TokenType.CHAR, TokenType.ARRAY);
+                error(INTEGER, CHAR, ARRAY);
         }
         LOG.trace("FiledDecList 结点设置完毕");
         return node;
@@ -571,33 +569,665 @@ public class Parser implements GrammarParser {
     private TreeNode param() {
         TreeNode node = node("Param");
         LOG.trace("构造 Param 结点");
-
+        Token token = peekToken();
+        TokenType type = token.getType();
+        switch (type) {
+            case INTEGER:
+            case CHAR:
+            case ARRAY:
+            case RECORD:
+            case ID:
+                node.setChild(typeDef(), formList());
+                break;
+            case VAR:
+                node.setChild(match(VAR), typeDef(), formList());
+                break;
+            default:
+                error(INTEGER, CHAR, ARRAY,
+                        RECORD, ID, VAR);
+        }
         LOG.trace("Param 结点设置完毕");
         return node;
     }
 
+    /**
+     * (48) [ParamMore] -> Ɛ                    {(}
+     * (49) [ParamMore] -> ; [ParamDecList]     {;}
+     */
     private TreeNode paramMore() {
         TreeNode node = node("ParamMore");
         LOG.trace("构造 ParamMore 结点");
-
+        switch (peekToken().getType()) {
+            case RPAREN:
+                node.setChild(node("Ɛ"));
+                break;
+            case SEMI:
+                node.setChild(match(SEMI), paramDecList());
+                break;
+            default:
+                error(RPAREN, SEMI);
+        }
         LOG.trace("ParamMore 结点设置完毕");
         return node;
     }
 
+    /**
+     * (27) [IdList] -> ID [IdMore]
+     */
     private TreeNode idList() {
         TreeNode node = node("IdList");
         LOG.trace("构造 IdList 结点");
-
+        node.setChild(matchIDINTCHAR(ID), idMore());
         LOG.trace("IdList 结点设置完毕");
         return node;
     }
 
+    /**
+     * (25) [FiledDecMore] -> Ɛ                 {end}
+     * (26) [FiledDecMore] -> [FiledDecList]    {integer,char,array}
+     */
     private TreeNode filedDecMore() {
         TreeNode node = node("FiledDecMore");
         LOG.trace("构造 FileDdecMore 结点");
-
+        switch (peekToken().getType()) {
+            case END:
+                node.setChild(node("Ɛ"));
+                break;
+            case INTEGER:
+            case CHAR:
+            case ARRAY:
+                node.setChild(filedDecList());
+                break;
+            default:
+                error(END, INTEGER, CHAR, ARRAY);
+        }
         LOG.trace("FiledDecMore 结点设置完毕");
         return node;
     }
 
+    /**
+     * (52) [FormList] -> ID [FidMore]
+     */
+    private TreeNode formList() {
+        TreeNode node = node("FormList");
+        LOG.trace("构造 FormList 结点");
+        node.setChild(matchIDINTCHAR(ID), fidMore());
+        LOG.trace("FormList 结点设置完毕");
+        return node;
+    }
+
+    /**
+     * (28) [IdMore] -> Ɛ           {;}
+     * (29) [IdMore] -> , [IdList]  {,}
+     */
+    private TreeNode idMore() {
+        TreeNode node = node("IdMore");
+        LOG.trace("构造 IdMore 结点");
+        switch (peekToken().getType()) {
+            case SEMI:
+                node.setChild(node("Ɛ"));
+                break;
+            case COMMA:
+                node.setChild(match(COMMA), idList());
+                break;
+            default:
+                error(SEMI, COMMA);
+        }
+        LOG.trace("IdMore 结点设置完毕");
+        return node;
+    }
+
+    /**
+     * (53) [FidMore] -> Ɛ              {;)}
+     * (54) [FidMore] -> , [FormList]   {,}
+     */
+    private TreeNode fidMore() {
+        TreeNode node = node("FidMore");
+        LOG.trace("构造 FidMore 结点");
+        switch (peekToken().getType()) {
+            case SEMI:
+            case RPAREN:
+                node.setChild(node("Ɛ"));
+                break;
+            case COMMA:
+                node.setChild(match(COMMA), formList());
+                break;
+            default:
+                error(SEMI, RPAREN, COMMA);
+        }
+        LOG.trace("FidMore 结点设置完毕");
+        return node;
+    }
+
+    /**
+     * (58) [StmList] -> [Stm] [StmMore]
+     */
+    private TreeNode stmList() {
+        TreeNode node = node("StmList");
+        LOG.trace("构造 StmList 结点");
+        node.setChild(stm(), stmMore());
+        LOG.trace("StmList 结点设置完毕");
+        return node;
+    }
+
+    /**
+     * (61) [Stm] -> [ConditionalStm]   {IF}
+     * (62) [Stm] -> [LoopStm]          {WHILE}
+     * (63) [Stm] -> [InputStm]         {READ}
+     * (64) [Stm] -> [OutputStm]        {WRITE}
+     * (65) [Stm] -> [ReturnStm]        {RETURN}
+     * (66) [Stm] -> ID [AssCall]       {ID}
+     */
+    private TreeNode stm() {
+        TreeNode node = node("Stm");
+        LOG.trace("构造 Stm 结点");
+        switch (peekToken().getType()) {
+            case IF:
+                node.setChild(conditionalStm());
+                break;
+            case WHILE:
+                node.setChild(loopStm());
+                break;
+            case READ:
+                node.setChild(inputStm());
+                break;
+            case WRITE:
+                node.setChild(outputStm());
+                break;
+            case RETURN:
+                node.setChild(returnStm());
+                break;
+            case ID:
+                node.setChild(matchIDINTCHAR(ID), assCall());
+                break;
+            default:
+                error(IF, WHILE, READ,
+                        WRITE, RETURN, ID);
+        }
+        LOG.trace("Stm 结点设置完毕");
+        return node;
+    }
+
+    /**
+     * (59) [StmMore] -> Ɛ              {else fi end endwh}
+     * (60) [StmMore] -> ; [StmList]    {;}
+     */
+    private TreeNode stmMore() {
+        TreeNode node = node("StmMore");
+        LOG.trace("构造 StmMore 结点");
+        switch (peekToken().getType()) {
+            case ELSE:
+            case FI:
+            case END:
+            case ENDWH:
+                node.setChild(node("Ɛ"));
+                break;
+            case SEMI:
+                node.setChild(match(SEMI), stmList());
+                break;
+            default:
+                error(ELSE, FI, END, ENDWH, SEMI);
+        }
+        LOG.trace("StmMore 结点设置完毕");
+        return node;
+    }
+
+    /**
+     * (70) [ConditionalStm] -> IF [RelExp] THEN [StmList] ELSE [StmList] FI
+     */
+    private TreeNode conditionalStm() {
+        TreeNode node = node("ConditionalStm");
+        LOG.trace("构造 ConditionalStm 结点");
+        node.setChild(match(IF), relExp(), match(THEN),
+                stmList(), match(ELSE), stmList(), match(FI));
+        LOG.trace("ConditionalStm 结点设置完毕");
+        return node;
+    }
+
+    /**
+     * (71) [LoopStm] -> WHILE [RelExp] DO [StmList] ENDWH
+     */
+    private TreeNode loopStm() {
+        TreeNode node = node("LoopStm");
+        LOG.trace("构造 LoopStm 结点");
+        node.setChild(match(WHILE), relExp(), match(DO), stmList(), match(ENDWH));
+        LOG.trace("LoopStm 结点设置完毕");
+        return node;
+    }
+
+    /**
+     * (72) [InputStm] -> Read ( [Invar] )
+     */
+    private TreeNode inputStm() {
+        TreeNode node = node("InputStm");
+        LOG.trace("构造 InputStm 结点");
+        node.setChild(match(READ), match(LPAREN), invar(), match(RPAREN));
+        LOG.trace("InputStm 结点设置完毕");
+        return node;
+    }
+
+    /**
+     * (74) [OutputStm] -> write ( [Exp] )
+     */
+    private TreeNode outputStm() {
+        TreeNode node = node("OutputStm");
+        LOG.trace("构造 OutputStm 结点");
+        node.setChild(match(WRITE), match(LPAREN), exp(), match(RPAREN));
+        LOG.trace("OutputStm 结点设置完毕");
+        return node;
+    }
+
+    /**
+     * (75) [ReturnStm] -> RETURN
+     */
+    private TreeNode returnStm() {
+        TreeNode node = node("ReturnStm");
+        LOG.trace("构造 ReturnStm 结点");
+        node.setChild(match(RETURN));
+        LOG.trace("ReturnStm 结点设置完毕");
+        return node;
+    }
+
+    /**
+     * (67) [AssCall] -> [AssignmentRest]   {:=}
+     * (68) [AssCall] -> [CallStmRest]      {(}
+     */
+    private TreeNode assCall() {
+        TreeNode node = node("AssCall");
+        LOG.trace("构造 AssCall 结点");
+        switch (peekToken().getType()) {
+            case ASSIGN:
+                node.setChild(assignmentRest());
+                break;
+            case LPAREN:
+                node.setChild(callStmRest());
+                break;
+            default:
+                error(ASSIGN, LPAREN);
+        }
+        LOG.trace("AssCall 结点设置完毕");
+        return node;
+    }
+
+    /**
+     * (81) [RelExp] -> [Exp] [OtherRelE]
+     */
+    private TreeNode relExp() {
+        TreeNode node = node("RelExp");
+        LOG.trace("构造 RelExp 结点");
+        node.setChild(exp(), otherRelE());
+        LOG.trace("RelExp 结点设置完毕");
+        return node;
+    }
+
+    /**
+     * (73) [Invar] -> ID
+     */
+    private TreeNode invar() {
+        TreeNode node = node("Invar");
+        LOG.trace("构造 Invar 结点");
+        node.setChild(matchIDINTCHAR(ID));
+        LOG.trace("Invar 结点设置完毕");
+        return node;
+    }
+
+    /**
+     * (83) [Exp] -> [Term] [OtherTerm]
+     */
+    private TreeNode exp() {
+        TreeNode node = node("Exp");
+        LOG.trace("构造 Exp 结点");
+        node.setChild(term(), otherTerm());
+        LOG.trace("Exp 结点设置完毕");
+        return node;
+    }
+
+    /**
+     * (69) [AssignmentRest] -> [VariMore] := [Exp]
+     */
+    private TreeNode assignmentRest() {
+        TreeNode node = node("AssignmentRest");
+        LOG.trace("构造 AssignmentRest 结点");
+        node.setChild(variMore(), match(ASSIGN), exp());
+        LOG.trace("AssignmentRest 结点设置完毕");
+        return node;
+    }
+
+    /**
+     * (76) [CallStmRest] -> ( [ActParamList] )
+     */
+    private TreeNode callStmRest() {
+        TreeNode node = node("CallStmRest");
+        LOG.trace("构造 CallStmRest 结点");
+        node.setChild(match(LPAREN), actParamList(), match(RPAREN));
+        LOG.trace("CallStmRest 结点设置完毕");
+        return node;
+    }
+
+    /**
+     * (82) [OtherRelE] -> [CmpOp] [Exp]
+     */
+    private TreeNode otherRelE() {
+        TreeNode node = node("OtherRelE");
+        LOG.trace("构造 OtherRelE 结点");
+        node.setChild(cmpOp(), exp());
+        LOG.trace("OtherRelE 结点设置完毕");
+        return node;
+    }
+
+    /**
+     * (86) [Term] -> [Factor] [OtherFactor]
+     */
+    private TreeNode term() {
+        TreeNode node = node("Term");
+        LOG.trace("构造 Term 结点");
+        node.setChild(factor(), otherFactor());
+        LOG.trace("Term 结点设置完毕");
+        return node;
+    }
+
+    /**
+     * (84) [OtherTerm] -> Ɛ                {< = ] then else fi do endwh ) end ; COMMA}
+     * (85) [OtherTerm] -> [AddOp] [Exp]    {+ -}
+     */
+    private TreeNode otherTerm() {
+        TreeNode node = node("OtherTerm");
+        LOG.trace("构造 OtherTerm 结点");
+        switch (peekToken().getType()) {
+            case LT:
+            case EQ:
+            case RMIDPAREN:
+            case THEN:
+            case ELSE:
+            case FI:
+            case DO:
+            case ENDWH:
+            case RPAREN:
+            case END:
+            case SEMI:
+            case COMMA:
+                node.setChild(node("Ɛ"));
+                break;
+            case PLUS:
+            case MINUS:
+                node.setChild(addOp(), exp());
+                break;
+            default:
+                error(LT, EQ, RMIDPAREN, THEN,
+                        ELSE, FI, DO, ENDWH,
+                        RPAREN, END, SEMI, COMMA,
+                        PLUS, MINUS);
+        }
+        LOG.trace("OtherTerm 结点设置完毕");
+        return node;
+    }
+
+    /**
+     * (93) [VariMore] -> Ɛ             {:= * / + - < = then else fi do endwh ) end ; Comma}
+     * (94) [VariMore] -> [ [Exp] ]     {[}
+     * (95) [VariMore] -> . [FieldVar]  {.}
+     */
+    private TreeNode variMore() {
+        TreeNode node = node("VariMore");
+        LOG.trace("构造 VariMore 结点");
+        switch (peekToken().getType()) {
+            case ASSIGN:
+            case TIMES:
+            case OVER:
+            case PLUS:
+            case MINUS:
+            case LT:
+            case EQ:
+            case THEN:
+            case ELSE:
+            case FI:
+            case DO:
+            case ENDWH:
+            case RPAREN:
+            case SEMI:
+            case COMMA:
+                node.setChild(node("Ɛ"));
+                break;
+            case RMIDPAREN:
+                node.setChild(match(LMIDPAREN), exp(), match(RMIDPAREN));
+                break;
+            case DOT:
+                node.setChild(match(DOT), filedVar());
+                break;
+            default:
+                error(ASSIGN, TIMES, OVER, PLUS, MINUS,
+                        LT, EQ, THEN, ELSE, FI,
+                        DO, ENDWH, RPAREN, SEMI,
+                        COMMA, RMIDPAREN, DOT);
+        }
+        LOG.trace("VariMore 结点设置完毕");
+        return node;
+    }
+
+    /**
+     * (77) [ActParamList] -> Ɛ                     {)}
+     * (78) [ActParamList] -> [Exp] [ActParamMore]  {( INTC ID}
+     */
+    private TreeNode actParamList() {
+        TreeNode node = node("ActParamList");
+        LOG.trace("构造 ActParamList 结点");
+        switch (peekToken().getType()) {
+            case RPAREN:
+                node.setChild(match(RPAREN));
+                break;
+            case LPAREN:
+            case INTC:
+            case ID:
+                node.setChild(exp(), actParamMore());
+                break;
+            default:
+                error(RPAREN, LPAREN, INTC, ID);
+        }
+        LOG.trace("ActParamList 结点设置完毕");
+        return node;
+    }
+
+    /**
+     * ( 99) [CmpOp] -> <
+     * (100) [CmpOp] -> =
+     */
+    private TreeNode cmpOp() {
+        TreeNode node = node("CmpOp");
+        LOG.trace("构造 CmpOp 结点");
+        switch (peekToken().getType()) {
+            case LT:
+                node.setChild(match(LT));
+                break;
+            case EQ:
+                node.setChild(match(EQ));
+                break;
+            default:
+                error(LT, EQ);
+        }
+        LOG.trace("CmpOp 结点设置完毕");
+        return node;
+    }
+
+    /**
+     * (89) [Factor] -> ( [Exp] )   {(}
+     * (90) [Factor] -> INTC        {INTC}
+     * (91) [Factor] -> [Variable]  {ID}
+     */
+    private TreeNode factor() {
+        TreeNode node = node("Factor");
+        LOG.trace("构造 Factor 结点");
+        switch (peekToken().getType()) {
+            case LPAREN:
+                node.setChild(match(LPAREN), exp(), match(RPAREN));
+                break;
+            case INTC:
+                matchIDINTCHAR(INTC);
+                break;
+            case ID:
+                node.setChild(variable());
+                break;
+            default:
+                error(LPAREN, INTC, ID);
+        }
+        LOG.trace("Factor 结点设置完毕");
+        return node;
+    }
+
+    /**
+     * (87) [OtherFactor] -> Ɛ                  { + - < = ] then else fi do endwh ) end ; COMMA}
+     * (88) [OtherFactor] -> [MultiOp] [Term]   {* /}
+     */
+    private TreeNode otherFactor() {
+        TreeNode node = node("OtherFactor");
+        LOG.trace("构造 OtherFactor 结点");
+        switch (peekToken().getType()) {
+            case PLUS:
+            case MINUS:
+            case LT:
+            case EQ:
+            case RMIDPAREN:
+            case THEN:
+            case ELSE:
+            case FI:
+            case DO:
+            case ENDWH:
+            case RPAREN:
+            case END:
+            case SEMI:
+            case COMMA:
+                node.setChild(node("Ɛ"));
+                break;
+            case TIMES:
+            case OVER:
+                node.setChild(multiOp(), term());
+                break;
+            default:
+                error(PLUS, MINUS, LT, EQ, RMIDPAREN, THEN, ELSE, FI, DO,
+                        ENDWH, RPAREN, END, SEMI, COMMA, TIMES, OVER);
+        }
+        LOG.trace("OtherFactor 结点设置完毕");
+        return node;
+    }
+
+    /**
+     * (101) [AddOp] -> +
+     * (102) [AddOp] -> -
+     */
+    private TreeNode addOp() {
+        TreeNode node = node("AddOp");
+        LOG.trace("构造 AddOp 结点");
+        switch (peekToken().getType()) {
+            case PLUS:
+                node.setChild(match(PLUS));
+                break;
+            case MINUS:
+                node.setChild(match(MINUS));
+                break;
+            default:
+                error(PLUS, MINUS);
+        }
+        LOG.trace("AddOp 结点设置完毕");
+        return node;
+    }
+
+    /**
+     * (96) [FiledVar] -> ID [FiledVarMore]
+     */
+    private TreeNode filedVar() {
+        TreeNode node = node("FiledVar");
+        LOG.trace("构造 FiledVar 结点");
+        node.setChild(matchIDINTCHAR(ID), filedVarMore());
+        LOG.trace("FiledVar 结点设置完毕");
+        return node;
+    }
+
+    /**
+     * (79) [ActParamMor -> Ɛ                   {)}
+     * (80) [ActParamMor -> , [ActParamList]    {,}
+     */
+    private TreeNode actParamMore() {
+        TreeNode node = node("FiledVar");
+        LOG.trace("构造 FiledVar 结点");
+        switch (peekToken().getType()) {
+            case RPAREN:
+                node.setChild(node("Ɛ"));
+                break;
+            case COMMA:
+                node.setChild(match(COMMA), actParamList());
+                break;
+            default:
+                error(RPAREN, COMMA);
+        }
+        LOG.trace("FiledVar 结点设置完毕");
+        return node;
+    }
+
+    /**
+     * (92) [Variable] -> ID [VariMore]
+     */
+    private TreeNode variable() {
+        TreeNode node = node("Variable");
+        LOG.trace("构造 Variable 结点");
+        node.setChild(matchIDINTCHAR(ID), variMore());
+        LOG.trace("Variable 结点设置完毕");
+        return node;
+    }
+
+    /**
+     * (103) [MultiOp] -> *
+     * (104) [MultiOp] -> /
+     */
+    private TreeNode multiOp() {
+        TreeNode node = node("MultiOp");
+        LOG.trace("构造 MultiOp 结点");
+        switch (peekToken().getType()) {
+            case TIMES:
+                node.setChild(match(TIMES));
+                break;
+            case OVER:
+                node.setChild(match(OVER));
+                break;
+            default:
+                error(TIMES, OVER);
+        }
+        LOG.trace("MultiOp 结点设置完毕");
+        return node;
+    }
+
+    /**
+     * (97) [FiledVarMore] -> Ɛ     {:= * / + - < = then else fi do endwh ) end ; COMMA}
+     * (98) [FiledVarMore] -> [Exp] {[}
+     */
+    private TreeNode filedVarMore() {
+        TreeNode node = node("FiledVarMore");
+        LOG.trace("构造 FiledVarMore 结点");
+        switch (peekToken().getType()) {
+            case ASSIGN:
+            case TIMES:
+            case OVER:
+            case PLUS:
+            case MINUS:
+            case LT:
+            case EQ:
+            case THEN:
+            case ELSE:
+            case FI:
+            case DO:
+            case ENDWH:
+            case RPAREN:
+            case END:
+            case SEMI:
+            case COMMA:
+                node.setChild(node("Ɛ"));
+                break;
+            case LMIDPAREN:
+                node.setChild(exp());
+                break;
+            default:
+                error(ASSIGN, TIMES, OVER, PLUS, MINUS, LT, EQ, THEN,
+                        ELSE, FI, DO, ENDWH, RPAREN, END, SEMI, COMMA, LMIDPAREN);
+        }
+        LOG.trace("FiledVarMore 结点设置完毕");
+        return node;
+    }
 }
