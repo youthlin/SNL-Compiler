@@ -1,9 +1,9 @@
-package com.youthlin.snl.compiler.frontend.tokenizer.test;
+package com.youthlin.snl.compiler.frontend.lexer.test;
 
-import com.youthlin.snl.compiler.frontend.tokenizer.Token;
-import com.youthlin.snl.compiler.frontend.tokenizer.TokenType;
-import com.youthlin.snl.compiler.frontend.tokenizer.TokenizationResult;
-import com.youthlin.snl.compiler.frontend.tokenizer.Tokenizer;
+import com.youthlin.snl.compiler.frontend.lexer.Token;
+import com.youthlin.snl.compiler.frontend.lexer.TokenType;
+import com.youthlin.snl.compiler.frontend.lexer.LexerResult;
+import com.youthlin.snl.compiler.frontend.lexer.Lexer;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -17,18 +17,19 @@ import java.util.List;
  * Created by lin on 2016-05-28-028.
  * 测试词法分析器
  */
-public class TokenizerTest {
-    private Tokenizer tokenizer;
+public class LexerTest {
+    private Lexer lexer;
+    private InputStream source;
 
     @Before
     public void init() {
-        InputStream source = TokenizerTest.class.getClassLoader().getResourceAsStream("test.snl");
-        tokenizer = new Tokenizer(source);
+        source = LexerTest.class.getClassLoader().getResourceAsStream("test.snl");
+        lexer = new Lexer();
     }
 
     @Test
     public void test() throws IOException {
-        TokenizationResult result = tokenizer.tokenize();
+        LexerResult result = lexer.getResult(source);
         if (result.getErrors().size() == 0) {
             List<Token> list = result.getTokenList();
             Assert.assertTrue(list.size() > 0);
@@ -44,10 +45,10 @@ public class TokenizerTest {
 
     @After
     public void after() {
-        InputStream source = TokenizerTest.class.getClassLoader().getResourceAsStream("test.snl");
+        InputStream source = LexerTest.class.getClassLoader().getResourceAsStream("test.snl");
         System.out.println("测试完成，源文件是:");
         System.out.println("//----------开始");
-        System.out.println(Tokenizer.getSourceFileAsString(source));
+        System.out.println(Lexer.getSourceFileAsString(source));
         System.out.println("//----------结束");
     }
 }

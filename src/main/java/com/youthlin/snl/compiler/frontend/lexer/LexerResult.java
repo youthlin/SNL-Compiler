@@ -1,4 +1,4 @@
-package com.youthlin.snl.compiler.frontend.tokenizer;
+package com.youthlin.snl.compiler.frontend.lexer;
 
 import java.util.List;
 
@@ -6,7 +6,7 @@ import java.util.List;
  * Created by lin on 2016-05-30-030.
  * 词法分析结果
  */
-public class TokenizationResult {
+public class LexerResult {
     private List<Token> tokenList;
     private List<String> errors;
 

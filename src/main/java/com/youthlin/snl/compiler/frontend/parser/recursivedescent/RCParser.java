@@ -1,90 +1,79 @@
-package com.youthlin.snl.compiler.frontend.syntaxparser.recursivedescent;
+package com.youthlin.snl.compiler.frontend.parser.recursivedescent;
 
-import com.youthlin.snl.compiler.frontend.syntaxparser.SyntaxParser;
-import com.youthlin.snl.compiler.frontend.syntaxparser.ParseResult;
-import com.youthlin.snl.compiler.frontend.syntaxparser.TreeNode;
-import com.youthlin.snl.compiler.frontend.tokenizer.Token;
-import com.youthlin.snl.compiler.frontend.tokenizer.TokenType;
-import com.youthlin.snl.compiler.frontend.tokenizer.TokenizationResult;
-import com.youthlin.snl.compiler.frontend.tokenizer.Tokenizer;
+import com.youthlin.snl.compiler.frontend.parser.SyntaxParser;
+import com.youthlin.snl.compiler.frontend.parser.ParseResult;
+import com.youthlin.snl.compiler.frontend.parser.SyntaxTree;
+import com.youthlin.snl.compiler.frontend.parser.TreeNode;
+import com.youthlin.snl.compiler.frontend.lexer.Lexer;
+import com.youthlin.snl.compiler.frontend.lexer.Token;
+import com.youthlin.snl.compiler.frontend.lexer.TokenType;
+import com.youthlin.snl.compiler.frontend.lexer.LexerResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
-import static com.youthlin.snl.compiler.frontend.tokenizer.TokenType.*;
+import static com.youthlin.snl.compiler.frontend.lexer.TokenType.*;
 
 /**
  * Created by lin on 2016-05-28-028.
  * 递归下降语法分析
  */
-public class Parser implements SyntaxParser {
-    private List<Token> list;
-    private int currentTokenIndex;
-    private List<String> errors;
-    private static final Logger LOG = LoggerFactory.getLogger(Parser.class);
+public class RCParser implements SyntaxParser {
+    private static final Logger LOG = LoggerFactory.getLogger(RCParser.class);
     private final Token errorToken = new Token(ERROR);
+    private int currentTokenIndex;
+    private List<Token> list;
+    private List<String> errors;
     private Token lastRead = errorToken;
 
-    public Parser(InputStream in) {
+    @Override
+    public ParseResult parse(InputStream in) {
         errors = new ArrayList<>();
-        Tokenizer tokenizer = new Tokenizer(in);
+        ParseResult result = new ParseResult();
+
+        Lexer lexer = new Lexer();
         try {
-            TokenizationResult tokenizationResult = tokenizer.tokenize();
-            if (tokenizationResult.getErrors().size() == 0) {
-                list = tokenizationResult.getTokenList();
+            LexerResult lexerResult = lexer.getResult(in);
+            if (lexerResult.getErrors().size() == 0) {
+                list = lexerResult.getTokenList();
             } else {
-                list = new LinkedList<>();
-                errors.add("词法错误");
-                for (String error : tokenizationResult.getErrors()) {
-                    errors.add(error);
-                }
+                //词法分析有错，直接返回
+                errors.add("Lexer Error.");
+                errors.addAll(lexerResult.getErrors());
+                result.setErrors(errors);
+                return result;
             }
         } catch (IOException e) {
-            list = new LinkedList<>();
             errors.add("读取源代码出错！" + e.getMessage());
-            e.printStackTrace();
-        }
-        for (Token t : list) {
-            LOG.trace(t.toString());
-        }
-    }
-
-    @Override
-    public ParseResult parse() {
-        ParseResult result = new ParseResult();
-        if (list.size() == 0) {
-            //读取源文件出错，或者有词法错误
             result.setErrors(errors);
             return result;
         }
-        //errors.clear();
-        TreeNode root = program();
-        result.setRoot(root);
-        if (getToken() != null) { //此时输入流中应该为空
+        //无词法错误，Token列表
+        for (Token t : list) LOG.trace(t.toString());
+
+        result.setTree(new SyntaxTree(program()));
+
+        //此时输入流中应该为空
+        if (getToken() != null) {
             LOG.warn("源程序太长");
             errors.add("Source code too long.");
         }
-        if (errors.size() == 0) {
-            result.setSuccess(true);
-            LOG.debug("语法分析成功");
-        } else LOG.warn("分析完成，存在错误");
+
+        if (errors.size() == 0) LOG.debug("语法分析成功");
+        else LOG.warn("分析完成，存在错误");
+
         result.setErrors(errors);
         return result;
-    }
-
-    private TreeNode node(String value) {
-        return new TreeNode(value);
     }
 
     /**
      * 获取下一个 Token.
      * 因为词法分析返回的 List 是 ArrayList,
-     * 因此这里使用 get 方式。
+     * 因此这里直接使用随机存取的 get 方式。
      *
      * @return Next Token. null if there has no more token.
      */
@@ -106,6 +95,16 @@ public class Parser implements SyntaxParser {
             token = list.get(currentTokenIndex);
         }
         return token;
+    }
+
+    private TreeNode node(String value) {
+        return new TreeNode(value);
+    }
+
+    private TreeNode node() {
+//        return new TreeNode("ɛ");
+//        return new TreeNode("Ɛ");
+        return new TreeNode("空");
     }
 
     private TreeNode match(TokenType expected) {
@@ -226,7 +225,7 @@ public class Parser implements SyntaxParser {
             case VAR:
             case PROCEDURE:
             case BEGIN:
-                node.setChildren(node("Ɛ"));
+                node.setChildren(node());
                 break;
             case TYPE:
                 node.setChildren(typeDec());
@@ -248,7 +247,7 @@ public class Parser implements SyntaxParser {
         switch (peekToken().getType()) {
             case PROCEDURE:
             case BEGIN:
-                node.setChildren(node("Ɛ"));
+                node.setChildren(node());
                 break;
             case VAR:
                 node.setChildren(varDec());
@@ -303,7 +302,7 @@ public class Parser implements SyntaxParser {
         switch (peekToken().getType()) {
             case PROCEDURE:
             case BEGIN:
-                node.setChildren(node("Ɛ"));
+                node.setChildren(node());
                 break;
             case INTEGER:
             case CHAR:
@@ -328,7 +327,7 @@ public class Parser implements SyntaxParser {
         LOG.trace("构造 VarIdMore 结点");
         switch (peekToken().getType()) {
             case SEMI:
-                node.setChildren(node("Ɛ"));
+                node.setChildren(node());
                 break;
             case COMMA:
                 node.setChildren(match(COMMA), varIdList());
@@ -347,11 +346,9 @@ public class Parser implements SyntaxParser {
     private TreeNode procDecpart() {
         TreeNode node = node("ProcDecpart");
         LOG.trace("构造 ProcDecpart 结点");
-        Token token = peekToken();
-        TokenType type = token.getType();
-        switch (type) {
+        switch (peekToken().getType()) {
             case BEGIN:
-                node.setChildren(node("Ɛ"));
+                node.setChildren(node());
                 break;
             case PROCEDURE:
                 node.setChildren(procDec());
@@ -362,6 +359,29 @@ public class Parser implements SyntaxParser {
         LOG.trace("ProcDecpart 结点设置完毕");
         return node;
     }
+
+//    /**
+//     * (42) [ProcDecMore] -> Ɛ          {begin}
+//     * (43) [ProcDecMore] -> [ProcDec]  {procedure}
+//     */
+//    private TreeNode procDecMore() {
+//        TreeNode node = node("ProcDecMore");
+//        LOG.trace("构造 ProcDecMore 结点");
+//        Token token = peekToken();
+//        TokenType type = token.getType();
+//        switch (type) {
+//            case BEGIN:
+//                node.setChildren(node());
+//                break;
+//            case PROCEDURE:
+//                node.setChildren(procDec());
+//                break;
+//            default:
+//                error(BEGIN, PROCEDURE);
+//        }
+//        LOG.trace("ProcDecMore 结点设置完毕");
+//        return node;
+//    }
 
     /**
      * (7) [TypeDec] -> type [TypeDecList] {type}
@@ -438,7 +458,7 @@ public class Parser implements SyntaxParser {
             case VAR:
             case PROCEDURE:
             case BEGIN:
-                node.setChildren(node("Ɛ"));
+                node.setChildren(node());
                 break;
             case ID:
                 node.setChildren(typeDecList());
@@ -459,7 +479,7 @@ public class Parser implements SyntaxParser {
         LOG.trace("构造 ProcDec 结点");
         node.setChildren(match(PROCEDURE), procName(),
                 match(LPAREN), paramList(), match(RPAREN), match(SEMI),
-                procDecPart(), procBody(), procDecMore());
+                procDecPart(), procBody(), procDecpart());
         LOG.trace("ProcDec 结点设置完毕");
         return node;
     }
@@ -543,7 +563,7 @@ public class Parser implements SyntaxParser {
         TokenType type = token.getType();
         switch (type) {
             case RPAREN:
-                node.setChildren(node("Ɛ"));
+                node.setChildren(node());
                 break;
             case INTEGER:
             case CHAR:
@@ -572,28 +592,6 @@ public class Parser implements SyntaxParser {
         return node;
     }
 
-    /**
-     * (42) [ProcDecMore] -> Ɛ          {begin}
-     * (43) [ProcDecMore] -> [ProcDec]  {procedure}
-     */
-    private TreeNode procDecMore() {
-        TreeNode node = node("ProcDecMore");
-        LOG.trace("构造 ProcDecMore 结点");
-        Token token = peekToken();
-        TokenType type = token.getType();
-        switch (type) {
-            case BEGIN:
-                node.setChildren(node("Ɛ"));
-                break;
-            case PROCEDURE:
-                node.setChildren(procDec());
-                break;
-            default:
-                error(BEGIN, PROCEDURE);
-        }
-        LOG.trace("ProcDecMore 结点设置完毕");
-        return node;
-    }
 
     /**
      * (19) [ArrayType] -> array [ [Low] . . [Top] ] of [BaseType]
@@ -713,7 +711,7 @@ public class Parser implements SyntaxParser {
         LOG.trace("构造 ParamMore 结点");
         switch (peekToken().getType()) {
             case RPAREN:
-                node.setChildren(node("Ɛ"));
+                node.setChildren(node());
                 break;
             case SEMI:
                 node.setChildren(match(SEMI), paramDecList());
@@ -745,7 +743,7 @@ public class Parser implements SyntaxParser {
         LOG.trace("构造 FileDdecMore 结点");
         switch (peekToken().getType()) {
             case END:
-                node.setChildren(node("Ɛ"));
+                node.setChildren(node());
                 break;
             case INTEGER:
             case CHAR:
@@ -779,7 +777,7 @@ public class Parser implements SyntaxParser {
         LOG.trace("构造 IdMore 结点");
         switch (peekToken().getType()) {
             case SEMI:
-                node.setChildren(node("Ɛ"));
+                node.setChildren(node());
                 break;
             case COMMA:
                 node.setChildren(match(COMMA), idList());
@@ -801,7 +799,7 @@ public class Parser implements SyntaxParser {
         switch (peekToken().getType()) {
             case SEMI:
             case RPAREN:
-                node.setChildren(node("Ɛ"));
+                node.setChildren(node());
                 break;
             case COMMA:
                 node.setChildren(match(COMMA), formList());
@@ -874,7 +872,7 @@ public class Parser implements SyntaxParser {
             case FI:
             case END:
             case ENDWH:
-                node.setChildren(node("Ɛ"));
+                node.setChildren(node());
                 break;
             case SEMI:
                 node.setChildren(match(SEMI), stmList());
@@ -1063,7 +1061,7 @@ public class Parser implements SyntaxParser {
             case END:
             case SEMI:
             case COMMA:
-                node.setChildren(node("Ɛ"));
+                node.setChildren(node());
                 break;
             case PLUS:
             case MINUS:
@@ -1106,7 +1104,7 @@ public class Parser implements SyntaxParser {
             case SEMI:
             case COMMA:
             case RMIDPAREN:/**注意*/
-                node.setChildren(node("Ɛ"));
+                node.setChildren(node());
                 break;
             case LMIDPAREN:
                 node.setChildren(match(LMIDPAREN), exp(), match(RMIDPAREN));
@@ -1131,7 +1129,7 @@ public class Parser implements SyntaxParser {
         LOG.trace("构造 ActParamList 结点");
         switch (peekToken().getType()) {
             case RPAREN:
-                node.setChildren(node("Ɛ"));
+                node.setChildren(node());
                 break;
             case LPAREN:
             case INTC:
@@ -1213,7 +1211,7 @@ public class Parser implements SyntaxParser {
             case END:
             case SEMI:
             case COMMA:
-                node.setChildren(node("Ɛ"));
+                node.setChildren(node());
                 break;
             case TIMES:
             case OVER:
@@ -1268,7 +1266,7 @@ public class Parser implements SyntaxParser {
         LOG.trace("构造 FiledVar 结点");
         switch (peekToken().getType()) {
             case RPAREN:
-                node.setChildren(node("Ɛ"));
+                node.setChildren(node());
                 break;
             case COMMA:
                 node.setChildren(match(COMMA), actParamList());
@@ -1336,7 +1334,7 @@ public class Parser implements SyntaxParser {
             case END:
             case SEMI:
             case COMMA:
-                node.setChildren(node("Ɛ"));
+                node.setChildren(node());
                 break;
             case LMIDPAREN:
                 node.setChildren(match(LMIDPAREN), exp(), match(RMIDPAREN));

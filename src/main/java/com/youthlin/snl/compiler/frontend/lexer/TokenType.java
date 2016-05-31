@@ -1,4 +1,4 @@
-package com.youthlin.snl.compiler.frontend.tokenizer;
+package com.youthlin.snl.compiler.frontend.lexer;
 
 /**
  * Created by lin on 2016-05-28-028.

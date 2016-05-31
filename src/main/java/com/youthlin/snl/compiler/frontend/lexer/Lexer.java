@@ -1,4 +1,4 @@
-package com.youthlin.snl.compiler.frontend.tokenizer;
+package com.youthlin.snl.compiler.frontend.lexer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,68 +12,41 @@ import java.util.Scanner;
  * Created by lin on 2016-05-28-028.
  * 词法分析器
  */
-public class Tokenizer {
+public class Lexer {
     private enum State {
         Normal, InId, InNum, InComment, InChar, Error,
         InAssign, InRange
     }
 
-    private InputStream inputStream;
+    private static Logger LOG = LoggerFactory.getLogger(Lexer.class);
     private int getMeFirst = -1;
-    private static Logger LOG = LoggerFactory.getLogger(Tokenizer.class);
     private int line = 1;
     private int column = 0;
     private List<String> errors;
+    private InputStream inputStream;
 
-    public Tokenizer(InputStream inputStream) {
-        if (inputStream == null) throw new IllegalArgumentException("Input Stream must not be null.");
-        this.inputStream = inputStream;
+    public LexerResult getResult(InputStream in) throws IOException {
         errors = new ArrayList<>();
-    }
-
-    public Tokenizer(File file) throws FileNotFoundException {
-        this(new FileInputStream(file));
-    }
-
-    private boolean isAlpha(int ch) {
-        return (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z');
-    }
-
-    private boolean isDigit(int ch) {
-        return (ch >= '0' && ch <= '9');
-    }
-
-    private boolean isBlank(int ch) {
-        return ((char) ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r');
-    }
-
-    private String showChar(int ch) {
-        if (ch == '\n')
-            return "\\n";
-        else if (ch == '\r')
-            return "\\r";
-        else return "" + (char) ch;
-    }
-
-    private int getChar() throws IOException {
-        int ch;
-        if (getMeFirst != -1 && getMeFirst != ' ' && getMeFirst != '\r' && getMeFirst != '\n') {
-            ch = getMeFirst;
-            getMeFirst = -1;
-        } else ch = inputStream.read();
-
-        if (ch == '\n') {
-            column = 0;
-            line++;
-        } else if (ch != -1) column++;
-
-        if (ch == '\r') column--;
-        LOG.trace("当前字符是{}({})[{}:{}]", showChar(ch), ch, line, column);
-        return ch;
-    }
-
-    private void unGetChar(int ch) {
-        getMeFirst = ch;
+        LexerResult result = new LexerResult();
+        List<Token> list = new ArrayList<>();
+        if (in == null) {
+            errors.add("Input stream must not be not null.");
+            result.setErrors(errors);
+            result.setTokenList(list);
+            return result;
+        }
+        inputStream = in;
+        Token token = getToken();
+        while (token != null) {
+            list.add(token);
+            token = getToken();
+        }
+        result.setTokenList(list);
+        result.setErrors(errors);
+        for (String error : errors) {
+            LOG.warn(error);
+        }
+        return result;
     }
 
     private Token getToken() throws IOException {
@@ -253,21 +226,45 @@ public class Tokenizer {
         return null;
     }
 
-    public TokenizationResult tokenize() throws IOException {
-        TokenizationResult result = new TokenizationResult();
-        errors = new ArrayList<>();
-        List<Token> list = new ArrayList<>();
-        Token token = getToken();
-        while (token != null) {
-            list.add(token);
-            token = getToken();
-        }
-        result.setTokenList(list);
-        result.setErrors(errors);
-        for (String error : errors) {
-            LOG.warn(error);
-        }
-        return result;
+    private int getChar() throws IOException {
+        int ch;
+        if (getMeFirst != -1 && getMeFirst != ' ' && getMeFirst != '\r' && getMeFirst != '\n') {
+            ch = getMeFirst;
+            getMeFirst = -1;
+        } else ch = inputStream.read();
+
+        if (ch == '\n') {
+            column = 0;
+            line++;
+        } else if (ch != -1) column++;
+
+        if (ch == '\r') column--;
+        LOG.trace("当前字符是{}({})[{}:{}]", showChar(ch), ch, line, column);
+        return ch;
+    }
+
+    private void unGetChar(int ch) {
+        getMeFirst = ch;
+    }
+
+    private boolean isAlpha(int ch) {
+        return (ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z');
+    }
+
+    private boolean isDigit(int ch) {
+        return (ch >= '0' && ch <= '9');
+    }
+
+    private boolean isBlank(int ch) {
+        return ((char) ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r');
+    }
+
+    private String showChar(int ch) {
+        if (ch == '\n')
+            return "\\n";
+        else if (ch == '\r')
+            return "\\r";
+        else return "" + (char) ch;
     }
 
     public static String getSourceFileAsString(InputStream in) {
@@ -281,10 +278,10 @@ public class Tokenizer {
     }
 
     public static void main(String[] args) {
-        InputStream in = Tokenizer.class.getClassLoader().getResourceAsStream("p.snl");
-        Tokenizer tokenizer = new Tokenizer(in);
+        InputStream in = Lexer.class.getClassLoader().getResourceAsStream("p.snl");
+        Lexer lexer = new Lexer();
         try {
-            TokenizationResult result = tokenizer.tokenize();
+            LexerResult result = lexer.getResult(in);
             if (result.getErrors().size() == 0) {
                 List<Token> list = result.getTokenList();
                 System.out.println();

@@ -1,4 +1,4 @@
-package com.youthlin.snl.compiler.frontend.tokenizer;
+package com.youthlin.snl.compiler.frontend.lexer;
 
 /**
  * Created by lin on 2016-05-28-028.
@@ -10,14 +10,14 @@ public class Token {
     TokenType type;
     String value;
 
-    public Token() {
+    Token() {
     }
 
     public Token(TokenType type) {
         this.type = type;
     }
 
-    public Token(int line, int column, TokenType type, String value) {
+    Token(int line, int column, TokenType type, String value) {
         this.line = line;
         this.column = column;
         this.type = type;
@@ -27,7 +27,7 @@ public class Token {
     /**
      * 如果是保留字则将类型改为相应的类型
      */
-    public void checkKeyWords() {
+    void checkKeyWords() {
         if (type == TokenType.ID) {
             if (value.equals(TokenType.PROGRAM.getStr())) {
                 type = TokenType.PROGRAM;

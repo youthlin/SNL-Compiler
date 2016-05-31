@@ -1,7 +1,7 @@
-package com.youthlin.snl.compiler.frontend.syntaxparser.test;
+package com.youthlin.snl.compiler.frontend.parser.test;
 
-import com.youthlin.snl.compiler.frontend.syntaxparser.SyntaxTree;
-import com.youthlin.snl.compiler.frontend.syntaxparser.TreeNode;
+import com.youthlin.snl.compiler.frontend.parser.SyntaxTree;
+import com.youthlin.snl.compiler.frontend.parser.TreeNode;
 import org.junit.Before;
 import org.junit.Test;
 

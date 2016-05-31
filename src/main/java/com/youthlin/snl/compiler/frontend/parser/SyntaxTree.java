@@ -1,7 +1,6 @@
-package com.youthlin.snl.compiler.frontend.syntaxparser;
+package com.youthlin.snl.compiler.frontend.parser;
 
 import java.io.PrintStream;
-import java.io.PrintWriter;
 import java.util.*;
 
 /**
@@ -9,6 +8,15 @@ import java.util.*;
  * 语法树
  */
 public class SyntaxTree {
+    private TreeNode root;
+
+    public SyntaxTree() {
+    }
+
+    public SyntaxTree(TreeNode root) {
+        this.root = root;
+    }
+
     public TreeNode getRoot() {
         return root;
     }
@@ -17,14 +25,12 @@ public class SyntaxTree {
         this.root = root;
     }
 
-    private TreeNode root;
-
     /**
      * 未完成，横板输出语法树
      *
      * @link http://youthlin.com/?p=868
      */
-    public static void printnotyet(TreeNode root, PrintWriter out, String msg, int offset) {
+    public static void printnotyet(TreeNode root, PrintStream out, String msg, int offset) {
         //首先输出Message
         out.println(msg);
         //树空，直接返回

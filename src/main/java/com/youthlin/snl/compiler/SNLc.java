@@ -1,18 +1,13 @@
 package com.youthlin.snl.compiler;
-//
-//import com.youthlin.snl.compiler.frontend.grammarparser.SyntaxParser;
-//import com.youthlin.snl.compiler.frontend.grammarparser.LL1.Parser;
 
-import com.youthlin.snl.compiler.frontend.syntaxparser.SyntaxParser;
-import com.youthlin.snl.compiler.frontend.syntaxparser.SyntaxTree;
-import com.youthlin.snl.compiler.frontend.syntaxparser.ParseResult;
+import com.youthlin.snl.compiler.frontend.parser.LL1.LL1Parser;
+import com.youthlin.snl.compiler.frontend.parser.SyntaxParser;
+import com.youthlin.snl.compiler.frontend.parser.SyntaxTree;
+import com.youthlin.snl.compiler.frontend.parser.ParseResult;
+import com.youthlin.snl.compiler.frontend.parser.recursivedescent.RCParser;
 import org.apache.commons.cli.*;
 
 import java.io.*;
-//
-//import java.io.FileInputStream;
-//import java.io.FileNotFoundException;
-//import java.io.InputStream;
 
 /**
  * Created by lin on 2016-05-31-031.
@@ -42,18 +37,18 @@ public class SNLc {
             InputStream in = new FileInputStream(arg[0]);
             SyntaxParser parser;
             if (cli.hasOption("l")) {
-                parser = new com.youthlin.snl.compiler.frontend.syntaxparser.LL1.Parser();
-            } else parser = new com.youthlin.snl.compiler.frontend.syntaxparser.recursivedescent.Parser(in);
-            ParseResult result = parser.parse();
+                parser = new LL1Parser();
+            } else parser = new RCParser();
+            ParseResult result = parser.parse(in);
             if (result == null) {
                 System.err.println("获取分析结果错误");
                 System.exit(1);
             }
             if (result.isSuccess()) {
-                SyntaxTree.print(result.getRoot(), new PrintStream(arg[0] + ".tree.txt"),
+                SyntaxTree.print(result.getTree().getRoot(), new PrintStream(arg[0] + ".tree.txt"),
                         "Syntax Tree for source code: " + arg[0], 0);
             } else {
-                System.err.println("Parser Error.错误列表：");
+                System.err.println("RCParser Error.错误列表：");
                 result.getErrors().forEach(System.err::println);
             }
         } catch (ParseException e) {
