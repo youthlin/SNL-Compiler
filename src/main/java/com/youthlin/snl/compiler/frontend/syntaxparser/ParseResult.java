@@ -1,6 +1,4 @@
-package com.youthlin.snl.compiler.frontend.grammarparser;
-
-import com.youthlin.snl.compiler.frontend.grammarparser.TreeNode;
+package com.youthlin.snl.compiler.frontend.syntaxparser;
 
 import java.util.List;
 

@@ -1,24 +1,22 @@
-package com.youthlin.snl.compiler.frontend.grammarparser.test;
+package com.youthlin.snl.compiler.frontend.syntaxparser.test;
 
-import com.youthlin.snl.compiler.frontend.grammarparser.GrammarTree;
-import com.youthlin.snl.compiler.frontend.grammarparser.TreeNode;
+import com.youthlin.snl.compiler.frontend.syntaxparser.SyntaxTree;
+import com.youthlin.snl.compiler.frontend.syntaxparser.TreeNode;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.PrintWriter;
 
 /**
  * Created by lin on 2016-05-28-028.
  * 测试语法树
  */
-public class GrammarTreeTest {
-    private GrammarTree tree;
+public class SyntaxTreeTest {
+    private SyntaxTree tree;
 
     //    @Before
     public void aVoid() {
-        tree = new GrammarTree();
+        tree = new SyntaxTree();
         TreeNode root = new TreeNode("<Program>");
         tree.setRoot(root);
         TreeNode head = new TreeNode("<ProgramHead>");
@@ -37,7 +35,7 @@ public class GrammarTreeTest {
 
     @Before
     public void init() {
-        tree = new GrammarTree();
+        tree = new SyntaxTree();
         TreeNode root = new TreeNode("<Program>");
         tree.setRoot(root);
         TreeNode head = new TreeNode("<ProgramHead>");
@@ -74,6 +72,6 @@ public class GrammarTreeTest {
 
     @Test
     public void showTree() throws FileNotFoundException {
-        GrammarTree.print(tree.getRoot(), System.out, "", 0);
+        SyntaxTree.print(tree.getRoot(), System.out, "", 0);
     }
 }

@@ -1,8 +1,8 @@
-package com.youthlin.snl.compiler.frontend.grammarparser.recursivedescent;
+package com.youthlin.snl.compiler.frontend.syntaxparser.recursivedescent;
 
-import com.youthlin.snl.compiler.frontend.grammarparser.GrammarParser;
-import com.youthlin.snl.compiler.frontend.grammarparser.ParseResult;
-import com.youthlin.snl.compiler.frontend.grammarparser.TreeNode;
+import com.youthlin.snl.compiler.frontend.syntaxparser.SyntaxParser;
+import com.youthlin.snl.compiler.frontend.syntaxparser.ParseResult;
+import com.youthlin.snl.compiler.frontend.syntaxparser.TreeNode;
 import com.youthlin.snl.compiler.frontend.tokenizer.Token;
 import com.youthlin.snl.compiler.frontend.tokenizer.TokenType;
 import com.youthlin.snl.compiler.frontend.tokenizer.TokenizationResult;
@@ -22,7 +22,7 @@ import static com.youthlin.snl.compiler.frontend.tokenizer.TokenType.*;
  * Created by lin on 2016-05-28-028.
  * 递归下降语法分析
  */
-public class Parser implements GrammarParser {
+public class Parser implements SyntaxParser {
     private List<Token> list;
     private int currentTokenIndex;
     private List<String> errors;
@@ -68,10 +68,11 @@ public class Parser implements GrammarParser {
         if (getToken() != null) { //此时输入流中应该为空
             LOG.warn("源程序太长");
             errors.add("Source code too long.");
-        } else {
-            LOG.debug("语法分析成功");
         }
-        if (errors.size() == 0) result.setSuccess(true);
+        if (errors.size() == 0) {
+            result.setSuccess(true);
+            LOG.debug("语法分析成功");
+        } else LOG.warn("分析完成，存在错误");
         result.setErrors(errors);
         return result;
     }
@@ -94,7 +95,7 @@ public class Parser implements GrammarParser {
             LOG.trace("获取下一个 Token =" + token);
             lastRead = token;
         } else {
-            LOG.warn("输入流已空");
+            LOG.trace("输入流已空");
         }
         return token;
     }

@@ -1,8 +1,8 @@
-package com.youthlin.snl.compiler.frontend.grammarparser.recursivedescent;
+package com.youthlin.snl.compiler.frontend.syntaxparser.recursivedescent;
 
-import com.youthlin.snl.compiler.frontend.grammarparser.GrammarTree;
-import com.youthlin.snl.compiler.frontend.grammarparser.ParseResult;
-import com.youthlin.snl.compiler.frontend.grammarparser.TreeNode;
+import com.youthlin.snl.compiler.frontend.syntaxparser.SyntaxTree;
+import com.youthlin.snl.compiler.frontend.syntaxparser.ParseResult;
+import com.youthlin.snl.compiler.frontend.syntaxparser.TreeNode;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -26,10 +26,10 @@ public class ParserTest {
         ParseResult result = parser.parse();
         if (result.isSuccess()) {
             TreeNode root = result.getRoot();
-            GrammarTree tree = new GrammarTree();
+            SyntaxTree tree = new SyntaxTree();
             tree.setRoot(root);
             System.out.println();
-            GrammarTree.print(root, new PrintStream(new FileOutputStream("D:/o.txt")), "以下是语法树", 5);
+            SyntaxTree.print(root, new PrintStream(new FileOutputStream("D:/o.txt")), "以下是语法树", 5);
         } else {
             System.err.println("Parser Error!");
             result.getErrors().forEach(System.err::println);

@@ -1,4 +1,4 @@
-package com.youthlin.snl.compiler.frontend.grammarparser;
+package com.youthlin.snl.compiler.frontend.syntaxparser;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;
@@ -8,7 +8,7 @@ import java.util.*;
  * Created by lin on 2016-05-28-028.
  * 语法树
  */
-public class GrammarTree {
+public class SyntaxTree {
     public TreeNode getRoot() {
         return root;
     }
@@ -189,6 +189,10 @@ public class GrammarTree {
                 }
             }
         }
+    }
+
+    public static void print(TreeNode root, PrintStream out) {
+        print(root, out, "", 0);
     }
 
     private static void insert(List<TreeNode> list, TreeNode node, int index) {
