@@ -1178,7 +1178,7 @@ public class Parser implements GrammarParser {
                 node.setChildren(match(LPAREN), exp(), match(RPAREN));
                 break;
             case INTC:
-                matchIDINTCHAR(INTC);
+                node.setChildren(matchIDINTCHAR(INTC));
                 break;
             case ID:
                 node.setChildren(variable());

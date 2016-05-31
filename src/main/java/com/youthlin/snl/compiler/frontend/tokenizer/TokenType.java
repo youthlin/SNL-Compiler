@@ -5,7 +5,7 @@ package com.youthlin.snl.compiler.frontend.tokenizer;
  * Token种类
  */
 public enum TokenType {
-    EOF("EOF"), ERROR("error"),
+    EOF("."), ERROR("error"),
 
     /*保留字*/
     PROGRAM("program"), PROCEDURE("procedure"), TYPE("type"), VAR("var"),
