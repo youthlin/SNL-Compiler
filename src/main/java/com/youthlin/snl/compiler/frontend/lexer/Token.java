@@ -10,11 +10,16 @@ public class Token {
     TokenType type;
     String value;
 
-    Token() {
+    public Token() {
+        this(TokenType.EMPTY);
+    }
+
+    public Token(String value) {
+        this(0, 0, TokenType.EMPTY, value);
     }
 
     public Token(TokenType type) {
-        this.type = type;
+        this(0, 0, type, "");
     }
 
     Token(int line, int column, TokenType type, String value) {

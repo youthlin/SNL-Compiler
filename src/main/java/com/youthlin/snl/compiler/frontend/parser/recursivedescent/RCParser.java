@@ -4,15 +4,11 @@ import com.youthlin.snl.compiler.frontend.parser.SyntaxParser;
 import com.youthlin.snl.compiler.frontend.parser.ParseResult;
 import com.youthlin.snl.compiler.frontend.parser.SyntaxTree;
 import com.youthlin.snl.compiler.frontend.parser.TreeNode;
-import com.youthlin.snl.compiler.frontend.lexer.Lexer;
 import com.youthlin.snl.compiler.frontend.lexer.Token;
 import com.youthlin.snl.compiler.frontend.lexer.TokenType;
-import com.youthlin.snl.compiler.frontend.lexer.LexerResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,106 +18,30 @@ import static com.youthlin.snl.compiler.frontend.lexer.TokenType.*;
  * Created by lin on 2016-05-28-028.
  * 递归下降语法分析
  */
-public class RCParser implements SyntaxParser {
+public class RCParser extends SyntaxParser {
     private static final Logger LOG = LoggerFactory.getLogger(RCParser.class);
-    private final Token errorToken = new Token(ERROR);
-    private int currentTokenIndex;
-    private List<Token> list;
-    private List<String> errors;
-    private Token lastRead = errorToken;
 
     @Override
-    public ParseResult parse(InputStream in) {
+    public ParseResult parse(List<Token> tokenList) {
         errors = new ArrayList<>();
         ParseResult result = new ParseResult();
-
-        Lexer lexer = new Lexer();
-        try {
-            LexerResult lexerResult = lexer.getResult(in);
-            if (lexerResult.getErrors().size() == 0) {
-                list = lexerResult.getTokenList();
-            } else {
-                //词法分析有错，直接返回
-                errors.add("Lexer Error.");
-                errors.addAll(lexerResult.getErrors());
-                result.setErrors(errors);
-                return result;
-            }
-        } catch (IOException e) {
-            errors.add("读取源代码出错！" + e.getMessage());
+        list = tokenList;
+        if (list.size() == 0) {
+            errors.add("No token to read.");
             result.setErrors(errors);
             return result;
         }
-        //无词法错误，Token列表
         for (Token t : list) LOG.trace(t.toString());
-
         result.setTree(new SyntaxTree(program()));
 
-        //此时输入流中应该为空
-        if (getToken() != null) {
+        if (getToken() != null) {//此时输入流中应该为空
             LOG.warn("源程序太长");
             errors.add("Source code too long.");
         }
-
         if (errors.size() == 0) LOG.debug("语法分析成功");
         else LOG.warn("分析完成，存在错误");
-
         result.setErrors(errors);
         return result;
-    }
-
-    /**
-     * 获取下一个 Token.
-     * 因为词法分析返回的 List 是 ArrayList,
-     * 因此这里直接使用随机存取的 get 方式。
-     *
-     * @return Next Token. null if there has no more token.
-     */
-    private Token getToken() {
-        Token token = null;
-        if (currentTokenIndex < list.size()) {
-            token = list.get(currentTokenIndex++);
-            LOG.trace("获取下一个 Token =" + token);
-            lastRead = token;
-        } else {
-            LOG.trace("输入流已空");
-        }
-        return token;
-    }
-
-    private Token peekToken() {
-        Token token = errorToken;
-        if (currentTokenIndex < list.size()) {
-            token = list.get(currentTokenIndex);
-        }
-        return token;
-    }
-
-    private TreeNode node(String value) {
-        return new TreeNode(value);
-    }
-
-    private TreeNode node() {
-//        return new TreeNode("ɛ");
-//        return new TreeNode("Ɛ");
-        return new TreeNode("空");
-    }
-
-    private TreeNode match(TokenType expected) {
-        Token input = getToken();
-        TreeNode node = null;
-        if (input != null) {
-            if (input.getType().equals(expected)) {
-                LOG.trace("已匹配" + input);
-                node = node(expected.getStr());
-            } else
-                errors.add("Unexpected token:|" + input.getValue() + "|. "
-                        + expected.getStr() + " expected. Near " + input.getValue()
-                        + " at [" + input.getLine() + ":" + input.getColumn() + "]");
-        } else {
-            errors.add("Unexpected EOF. No more tokens at input stream.");
-        }
-        return node;
     }
 
     private TreeNode matchIDINTCHAR(TokenType type) {
@@ -140,22 +60,6 @@ public class RCParser implements SyntaxParser {
                     + " at [" + lastRead.getLine() + ":" + lastRead.getColumn() + "]");
         }
         return node;
-    }
-
-    private void error(TokenType... types) {
-        LOG.warn("匹配错误" + peekToken());
-        StringBuilder sb = new StringBuilder("Unexpected token near |" + lastRead.getValue() + "|. |");
-        for (TokenType t : types) {
-            sb.append(t.getStr());
-            sb.append("|");
-        }
-        sb.append(" expected. ");
-        sb.append(" at [");
-        sb.append(lastRead.getLine());
-        sb.append(":");
-        sb.append(lastRead.getColumn());
-        sb.append("]");
-        errors.add(sb.toString());
     }
 
     /**

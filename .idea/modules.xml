@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/Compiler.iml" filepath="$PROJECT_DIR$/Compiler.iml" />
+      <module fileurl="file://$PROJECT_DIR$/SNL Compiler.iml" filepath="$PROJECT_DIR$/SNL Compiler.iml" />
     </modules>
   </component>
 </project>

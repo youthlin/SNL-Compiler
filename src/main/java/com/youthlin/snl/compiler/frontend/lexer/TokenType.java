@@ -5,7 +5,7 @@ package com.youthlin.snl.compiler.frontend.lexer;
  * Token种类
  */
 public enum TokenType {
-    EOF("."), ERROR("error"),
+    EOF("."), ERROR("error"), EMPTY(""),
 
     /*保留字*/
     PROGRAM("program"), PROCEDURE("procedure"), TYPE("type"), VAR("var"),

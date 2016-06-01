@@ -23,10 +23,12 @@
         <outputRelativeToContentRoot value="true" />
         <processorPath useClasspath="true" />
         <module name="Compiler" />
+        <module name="SNL Compiler" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="1.8">
       <module name="Compiler" target="1.8" />
+      <module name="SNL Compiler" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>
