@@ -44,24 +44,6 @@ public class RCParser extends SyntaxParser {
         return result;
     }
 
-    private TreeNode matchIDINTCHAR(TokenType type) {
-        TreeNode node = null;
-        Token token = getToken();
-        if (token != null) {
-            if (token.getType().equals(type)) {
-                node = node(token.getValue());
-            } else {
-                errors.add("Unexpected Token near |" + token.getValue()
-                        + "| A " + type.name() + " token expected. "
-                        + " at [" + token.getLine() + ":" + token.getColumn() + "]");
-            }
-        } else {
-            errors.add("Unexpected EOF near |" + lastRead.getValue() + "|. A ID token expected. "
-                    + " at [" + lastRead.getLine() + ":" + lastRead.getColumn() + "]");
-        }
-        return node;
-    }
-
     /**
      * (1) [Program] -> [ProgramHead] [DeclarePart] [ProgramBody] .  {program}
      */
@@ -113,7 +95,7 @@ public class RCParser extends SyntaxParser {
     private TreeNode programName() {
         TreeNode node = node("ProgramName");
         LOG.trace("构造 ProgramName 结点");
-        node.setChildren(matchIDINTCHAR(ID));
+        node.setChildren(match(ID));
         LOG.trace("ProgramName 结点设置完毕");
         return node;
     }
@@ -191,7 +173,7 @@ public class RCParser extends SyntaxParser {
     private TreeNode varIdList() {
         TreeNode node = node("varIdList");
         LOG.trace("构造 varIdList 结点");
-        node.setChildren(matchIDINTCHAR(ID), varIdMore());
+        node.setChildren(match(ID), varIdMore());
         LOG.trace("varIdList 结点设置完毕");
         return node;
     }
@@ -315,7 +297,7 @@ public class RCParser extends SyntaxParser {
     private TreeNode typeId() {
         TreeNode node = node("TypeID");
         LOG.trace("构造 TypeID 结点");
-        node.setChildren(matchIDINTCHAR(ID));
+        node.setChildren(match(ID));
         LOG.trace("TypeID 结点设置完毕");
         return node;
     }
@@ -340,7 +322,7 @@ public class RCParser extends SyntaxParser {
                 node.setChildren(structureType());
                 break;
             case ID:
-                node.setChildren(matchIDINTCHAR(ID));
+                node.setChildren(match(ID));
                 break;
             default:
                 error(INTEGER, CHAR, ARRAY, RECORD, ID);
@@ -451,7 +433,7 @@ public class RCParser extends SyntaxParser {
     private TreeNode procName() {
         TreeNode node = node("ProcName");
         LOG.trace("构造 ProcName 结点");
-        node.setChildren(matchIDINTCHAR(ID));
+        node.setChildren(match(ID));
         LOG.trace("ProcName 结点设置完毕");
         return node;
     }
@@ -538,7 +520,7 @@ public class RCParser extends SyntaxParser {
     private TreeNode low() {
         TreeNode node = node("Low");
         LOG.trace("构造 Low 结点");
-        node.setChildren(matchIDINTCHAR(INTC));
+        node.setChildren(match(INTC));
         LOG.trace("Low 结点设置完毕");
         return node;
     }
@@ -549,7 +531,7 @@ public class RCParser extends SyntaxParser {
     private TreeNode top() {
         TreeNode node = node("Top");
         LOG.trace("构造 Top 结点");
-        node.setChildren(matchIDINTCHAR(INTC));
+        node.setChildren(match(INTC));
         LOG.trace("Top 结点设置完毕");
         return node;
     }
@@ -633,7 +615,7 @@ public class RCParser extends SyntaxParser {
     private TreeNode idList() {
         TreeNode node = node("IdList");
         LOG.trace("构造 IdList 结点");
-        node.setChildren(matchIDINTCHAR(ID), idMore());
+        node.setChildren(match(ID), idMore());
         LOG.trace("IdList 结点设置完毕");
         return node;
     }
@@ -667,7 +649,7 @@ public class RCParser extends SyntaxParser {
     private TreeNode formList() {
         TreeNode node = node("FormList");
         LOG.trace("构造 FormList 结点");
-        node.setChildren(matchIDINTCHAR(ID), fidMore());
+        node.setChildren(match(ID), fidMore());
         LOG.trace("FormList 结点设置完毕");
         return node;
     }
@@ -754,7 +736,7 @@ public class RCParser extends SyntaxParser {
                 node.setChildren(returnStm());
                 break;
             case ID:
-                node.setChildren(matchIDINTCHAR(ID), assCall());
+                node.setChildren(match(ID), assCall());
                 break;
             default:
                 error(IF, WHILE, READ,
@@ -885,7 +867,7 @@ public class RCParser extends SyntaxParser {
     private TreeNode invar() {
         TreeNode node = node("Invar");
         LOG.trace("构造 Invar 结点");
-        node.setChildren(matchIDINTCHAR(ID));
+        node.setChildren(match(ID));
         LOG.trace("Invar 结点设置完毕");
         return node;
     }
@@ -1081,7 +1063,7 @@ public class RCParser extends SyntaxParser {
                 node.setChildren(match(LPAREN), exp(), match(RPAREN));
                 break;
             case INTC:
-                node.setChildren(matchIDINTCHAR(INTC));
+                node.setChildren(match(INTC));
                 break;
             case ID:
                 node.setChildren(variable());
@@ -1156,7 +1138,7 @@ public class RCParser extends SyntaxParser {
     private TreeNode filedVar() {
         TreeNode node = node("FiledVar");
         LOG.trace("构造 FiledVar 结点");
-        node.setChildren(matchIDINTCHAR(ID), filedVarMore());
+        node.setChildren(match(ID), filedVarMore());
         LOG.trace("FiledVar 结点设置完毕");
         return node;
     }
@@ -1188,7 +1170,7 @@ public class RCParser extends SyntaxParser {
     private TreeNode variable() {
         TreeNode node = node("Variable");
         LOG.trace("构造 Variable 结点");
-        node.setChildren(matchIDINTCHAR(ID), variMore());
+        node.setChildren(match(ID), variMore());
         LOG.trace("Variable 结点设置完毕");
         return node;
     }

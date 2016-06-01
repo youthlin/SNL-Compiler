@@ -28,7 +28,7 @@ public class LL1Parser extends SyntaxParser {
         list = tokenList;
         errors = new ArrayList<>();
         Stack<Symbol> stack = new Stack<>();
-        final NonTerminalSymbol start = new NonTerminalSymbol("S");
+        final NonTerminalSymbol start = NonTerminalSymbol.Program();
         //语法树根结点
         final TreeNode root = start.getNode();
         ParseResult result = new ParseResult();
@@ -57,7 +57,11 @@ public class LL1Parser extends SyntaxParser {
                             stack.push(productionRight.get(size - 1 - i));
                     }
                     non.getNode().setChildren(children);
-                } else errors.add("查表出错");
+                } else {
+                    LOG.trace("查表出错" + non.getValue());
+                    errors.add("Unexpected token near `" + lastRead.getValue() + "`. at "
+                            + lastRead.getLine() + ":" + lastRead.getColumn());
+                }
             } else {
                 errors.add("未识别的符号,这个错误不应该出现");
             }

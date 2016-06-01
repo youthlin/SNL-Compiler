@@ -26,7 +26,8 @@ public class RCLL1ParserTest {
     public void init() throws IOException {
         in = RCLL1ParserTest.class.getClassLoader().getResourceAsStream("sd.snl");
         RCParser = new RCParser();
-        list = getList();
+//        list = getList();
+        list = new Lexer().getResult(in).getTokenList();
         for (Token t : list) System.out.println(t);
     }
 
