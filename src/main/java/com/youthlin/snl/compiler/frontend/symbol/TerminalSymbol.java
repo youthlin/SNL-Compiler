@@ -1,7 +1,6 @@
 package com.youthlin.snl.compiler.frontend.symbol;
 
 import com.youthlin.snl.compiler.frontend.lexer.Token;
-import com.youthlin.snl.compiler.frontend.lexer.TokenType;
 import com.youthlin.snl.compiler.frontend.parser.TreeNode;
 
 /**

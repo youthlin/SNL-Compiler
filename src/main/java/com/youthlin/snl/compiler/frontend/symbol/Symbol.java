@@ -7,7 +7,5 @@ import com.youthlin.snl.compiler.frontend.parser.TreeNode;
  * 符号，派生出终极符和非终极符
  */
 public abstract class Symbol {
-
     public abstract TreeNode getNode();
-
 }

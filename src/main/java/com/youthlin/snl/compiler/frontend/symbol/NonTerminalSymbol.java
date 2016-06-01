@@ -11,7 +11,6 @@ import java.util.Map;
  * 非终极符
  */
 public class NonTerminalSymbol extends Symbol {
-    public static final NonTerminalSymbol start = new NonTerminalSymbol("Program");
     private final TreeNode node;
 
     public NonTerminalSymbol(String value) {

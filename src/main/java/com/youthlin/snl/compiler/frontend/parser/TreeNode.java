@@ -191,7 +191,7 @@ public class TreeNode {
         this.children = nodes;
     }
 
-    String getValue() {
+    public String getValue() {
         return value;
     }
 

@@ -12,6 +12,7 @@ import com.youthlin.snl.compiler.frontend.symbol.TerminalSymbol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
@@ -24,8 +25,10 @@ public class LL1Parser extends SyntaxParser {
 
     @Override
     public ParseResult parse(List<Token> tokenList) {
+        list = tokenList;
+        errors = new ArrayList<>();
         Stack<Symbol> stack = new Stack<>();
-        final NonTerminalSymbol start = NonTerminalSymbol.start;
+        final NonTerminalSymbol start = new NonTerminalSymbol("S");
         //语法树根结点
         final TreeNode root = start.getNode();
         ParseResult result = new ParseResult();
@@ -33,7 +36,7 @@ public class LL1Parser extends SyntaxParser {
         stack.push(start); //文法开始符压栈
 
         Symbol symbol;
-        while (!stack.empty() || peekToken().getType() != TokenType.EOF) {
+        while (!stack.empty() && peekToken().getType() != TokenType.EOF) {
             symbol = stack.pop();
             //是终极符，则应该匹配
             if (symbol instanceof TerminalSymbol) {
@@ -50,8 +53,7 @@ public class LL1Parser extends SyntaxParser {
                         children[i] = productionRight.get(i).getNode();
                         Symbol s = productionRight.get(size - 1 - i);
                         //epsilon不用入栈
-                        if (!(s instanceof TerminalSymbol)
-                                || ((s instanceof TerminalSymbol)) && !((TerminalSymbol) s).isEpsilon())
+                        if (!(s instanceof TerminalSymbol) || !((TerminalSymbol) s).isEpsilon())
                             stack.push(productionRight.get(size - 1 - i));
                     }
                     non.getNode().setChildren(children);
@@ -61,8 +63,8 @@ public class LL1Parser extends SyntaxParser {
             }
         }
 
-        //最后格局应为(S)(#)
-        if (stack.empty() || stack.pop() != start || getToken().getType() != TokenType.EOF) {
+        //最后格局应为()(#)
+        if (!stack.empty() || getToken().getType() != TokenType.EOF) {
             errors.add("Source code too long.");
         }
 
