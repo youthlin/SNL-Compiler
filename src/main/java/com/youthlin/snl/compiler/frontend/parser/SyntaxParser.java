@@ -9,6 +9,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,12 +30,12 @@ public abstract class SyntaxParser {
 
     public abstract ParseResult parse(List<Token> tokenList);
 
-    public ParseResult parse(InputStream in) {
+    public ParseResult parse(Reader reader) {
         errors = new ArrayList<>();
         ParseResult result = new ParseResult();
         Lexer lexer = new Lexer();
         try {
-            LexerResult lexerResult = lexer.getResult(in);
+            LexerResult lexerResult = lexer.getResult(reader);
             if (lexerResult.getErrors().size() == 0) {
                 list = lexerResult.getTokenList();
             } else {
@@ -92,9 +94,16 @@ public abstract class SyntaxParser {
         Token input = getToken();
         TreeNode node = null;
         if (input != null) {
-            if (input.getType().equals(expected)) {
+            TokenType type = input.getType();
+            if (type.equals(expected)) {
                 LOG.trace("已匹配" + input);
                 node = node(expected.getStr());
+                switch (type) {
+                    case ID:
+                    case INTC:
+                    case CHARACTER:
+                        node = node(input.getValue());
+                }
             } else
                 errors.add("Unexpected token near |" + input.getValue() + "|. `"
                         + expected.getStr() + "` expected. "

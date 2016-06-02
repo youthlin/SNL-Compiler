@@ -18,8 +18,8 @@ import static com.youthlin.snl.compiler.frontend.lexer.TokenType.*;
  * Created by lin on 2016-05-28-028.
  * 递归下降语法分析
  */
-public class RCParser extends SyntaxParser {
-    private static final Logger LOG = LoggerFactory.getLogger(RCParser.class);
+public class RDParser extends SyntaxParser {
+    private static final Logger LOG = LoggerFactory.getLogger(RDParser.class);
 
     @Override
     public ParseResult parse(List<Token> tokenList) {

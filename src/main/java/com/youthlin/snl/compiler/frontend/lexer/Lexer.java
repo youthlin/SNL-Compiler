@@ -23,19 +23,19 @@ public class Lexer {
     private int line = 1;
     private int column = 0;
     private List<String> errors;
-    private InputStream inputStream;
+    private Reader reader;
 
-    public LexerResult getResult(InputStream in) throws IOException {
+    public LexerResult getResult(Reader reader) throws IOException {
         errors = new ArrayList<>();
         LexerResult result = new LexerResult();
         List<Token> list = new ArrayList<>();
-        if (in == null) {
+        if (reader == null) {
             errors.add("Input stream must not be not null.");
             result.setErrors(errors);
             result.setTokenList(list);
             return result;
         }
-        inputStream = in;
+        this.reader = reader;
         Token token = getToken();
         while (token != null) {
             list.add(token);
@@ -204,7 +204,7 @@ public class Lexer {
                     //endregion
                     break;
                 case Error://region 错误处理 返回空的Token 记录错误信息
-                    LOG.warn("出错了");
+                    LOG.warn("[错误]在 " + line + "行 " + column + "列");
                     errors.add("[错误]在 " + line + "行 " + column + "列");
                     token = new Token();
                     return token;
@@ -231,7 +231,7 @@ public class Lexer {
         if (getMeFirst != -1 && getMeFirst != ' ' && getMeFirst != '\r' && getMeFirst != '\n') {
             ch = getMeFirst;
             getMeFirst = -1;
-        } else ch = inputStream.read();
+        } else ch = reader.read();
 
         if (ch == '\n') {
             column = 0;
@@ -281,7 +281,7 @@ public class Lexer {
         InputStream in = Lexer.class.getClassLoader().getResourceAsStream("p.snl");
         Lexer lexer = new Lexer();
         try {
-            LexerResult result = lexer.getResult(in);
+            LexerResult result = lexer.getResult(new InputStreamReader(in));
             if (result.getErrors().size() == 0) {
                 List<Token> list = result.getTokenList();
                 System.out.println();

@@ -19,7 +19,7 @@ public class Token {
     }
 
     public Token(TokenType type) {
-        this(0, 0, type, "");
+        this(0, 0, type, type.getStr());
     }
 
     Token(int line, int column, TokenType type, String value) {

@@ -18,22 +18,22 @@ import java.util.List;
  * 测试递归下降
  */
 public class RCLL1ParserTest {
-    private RCParser RCParser;
+    private RDParser RDParser;
     private InputStream in;
     private List<Token> list;
 
     @Before
     public void init() throws IOException {
         in = RCLL1ParserTest.class.getClassLoader().getResourceAsStream("sd.snl");
-        RCParser = new RCParser();
+        RDParser = new RDParser();
 //        list = getList();
-        list = new Lexer().getResult(in).getTokenList();
+        list = new Lexer().getResult(new InputStreamReader(in)).getTokenList();
         for (Token t : list) System.out.println(t);
     }
 
     @Test
     public void test() throws FileNotFoundException {
-//        ParseResult result = RCParser.parse(in);
+//        ParseResult result = RDParser.parse(in);
         ParseResult result = new LL1Parser().parse(list);
         if (result.isSuccess()) {
             SyntaxTree tree = result.getTree();
@@ -41,7 +41,7 @@ public class RCLL1ParserTest {
             SyntaxTree.print(tree.getRoot(), new PrintStream(System.out),
                     "以下是语法树", 5);
         } else {
-            System.err.println("RCParser Error!");
+            System.err.println("RDParser Error!");
             result.getErrors().forEach(System.err::println);
         }
     }
