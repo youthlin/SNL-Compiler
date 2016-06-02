@@ -1,0 +1,46 @@
+{冒泡排序}
+{输入m,表示要排序的数的个数；接着输入m个整数；
+ 输出从小到大排序后的结果}
+
+program  p
+var  integer  i,j,num;
+      array[1..20] of  integer a;
+
+procedure  q(integer num);
+var  integer i,j,k;
+     integer t;
+begin
+  i:=1;
+  j:=1;
+  while i < num do
+     j:=num-i+1;
+     k:=1;
+     while k<j  do
+    	 if a[k+1] < a[k]  
+         then  t:=a[k];
+	       a[k]:=a[k+1];
+	       a[k+1]:=t
+         else  t:=0
+         fi;   
+     k:=k+1
+     endwh;
+  i:=i+1
+  endwh
+end
+
+begin
+   read(num);
+   i:=1;
+   while i<(num+1)  do
+     read(j);
+     a[i]:=j;
+     i:=i+1
+   endwh;
+   q(num);
+   i:=1;
+   while  i<(num+1) do 
+       write(a[i]);
+       i:=i+1
+   endwh
+end.
+  

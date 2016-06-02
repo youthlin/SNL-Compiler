@@ -1,0 +1,19 @@
+
+{测试常表达式优化和公共表达式优化部分的例子；
+ 检测复杂变量}
+
+program  pp
+var  integer  v,x,i,j,y;
+     array [1..10]  of integer a;
+begin
+   i:=5;
+   j:=3;
+   read(v);
+   a[i]:= v;
+   x:=a[i]+j;
+   write(x);
+   a[i]:=a[i]+j;
+   write(a[i]);
+   y:=a[i]+j;
+   write(y)
+end.

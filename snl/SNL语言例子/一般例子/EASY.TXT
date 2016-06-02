@@ -1,0 +1,23 @@
+{简单的过程调用，测试变参的传递}
+program pp
+var   integer  v1;
+char  c;
+
+procedure f();
+begin
+    v1 :=2
+end
+
+procedure t1();
+var  integer v1;
+begin
+    v1 :=1
+end
+
+begin
+  read(v1);
+  t1();
+  write(v1);
+  f();
+  write(v1)
+end.

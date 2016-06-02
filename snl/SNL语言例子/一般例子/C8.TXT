@@ -1,0 +1,37 @@
+{深层调用测试}
+{输入n,若n<10,则输出n+10,20,n+10;
+           否则输出n-10,20,n-10}
+program  example
+type w1=record
+        integer x;
+        integer y;
+        end;
+var  
+     integer a;
+     integer b;
+     w1 c;
+
+procedure sd(integer s1;var integer s2); 
+var integer ss;
+procedure sss(integer a);
+procedure ddd(integer b);
+begin
+   write(b)
+end
+begin
+   ss:=20;
+   write(a);
+   ddd(ss)
+end
+begin
+   if s1<10
+   then s2:=s1+10
+   else s2:=s1-10	
+   fi;
+   sss(s2)
+end
+begin      
+   read(a);
+   sd(a,b);
+   write(b)
+end.

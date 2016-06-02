@@ -1,0 +1,28 @@
+{域变量的测试程序}
+{功能：对于输入m,n ;  输出m+1,n+1,和m+1+n+1的值}
+program  example
+type 
+     w2=record
+          integer  x;
+          integer  y;
+        end;
+var 
+w2  a;     
+integer b;
+integer c;
+integer d;
+procedure sd(integer s1;var integer s2); 
+begin
+   s2:=s1+1
+end
+begin       
+   read(b);
+   read(d);
+   sd(b,c);
+   a.x:=c;
+   write(a.x);
+   sd(d,c);
+   a.y:=c;
+   write(a.y);
+   write(a.x+a.y)        
+end.

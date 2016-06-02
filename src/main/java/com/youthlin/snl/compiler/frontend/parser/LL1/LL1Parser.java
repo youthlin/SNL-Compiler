@@ -28,6 +28,9 @@ public class LL1Parser extends SyntaxParser {
     public ParseResult parse(List<Token> tokenList) {
         list = tokenList;
         errors = new ArrayList<>();
+        for (Token t : list) {
+            LOG.trace(t.toString());
+        }
         Stack<Symbol> stack = new Stack<>();
         final NonTerminalSymbol start = NonTerminalSymbol.Program();
         //语法树根结点
@@ -53,20 +56,8 @@ public class LL1Parser extends SyntaxParser {
                     int size = productionRight.size();
                     TreeNode[] children = new TreeNode[size];
                     for (int i = 0; i < size; i++) {
-                        Symbol s = productionRight.get(i);
-                        TreeNode node = s.getNode();
-                        //如果是ID/INTC/CHARACTER，要设置值
-//                        if (s instanceof TerminalSymbol) {
-//                            switch (((TerminalSymbol) s).getToken().getType()) {
-//                                case ID:
-//                                case INTC:
-//                                case CHARACTER:
-//                                    node.setValue(lastRead.getValue());
-//                            }
-//                        }
-                        children[i] = node;
-
-                        s = productionRight.get(size - 1 - i);
+                        children[i] = productionRight.get(i).getNode();
+                        Symbol s = productionRight.get(size - 1 - i);
                         //epsilon不用入栈
                         if (!(s instanceof TerminalSymbol) || !((TerminalSymbol) s).isEpsilon())
                             stack.push(productionRight.get(size - 1 - i));
@@ -85,6 +76,7 @@ public class LL1Parser extends SyntaxParser {
 
         //最后格局应为()(#)
         if (!stack.empty() || getToken().getType() != TokenType.EOF) {
+            LOG.warn("当前格局应为 栈空，输入流只剩结束符");
             errors.add("Source code too long.");
         }
 

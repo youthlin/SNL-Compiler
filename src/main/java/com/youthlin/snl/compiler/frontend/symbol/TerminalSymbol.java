@@ -9,6 +9,7 @@ import com.youthlin.snl.compiler.frontend.parser.TreeNode;
  * 终极符
  */
 public class TerminalSymbol extends Symbol {
+    //不同于开始符，因为 空 不会产生子树，因此可以重用同一个
     public static final TerminalSymbol epsilon = new TerminalSymbol(new Token("空"));
     private final TreeNode node;
     private Token token;
@@ -23,7 +24,7 @@ public class TerminalSymbol extends Symbol {
         node = new TreeNode(token.getValue());
     }
 
-    public TerminalSymbol(TokenType type) {
+    TerminalSymbol(TokenType type) {
         this(new Token(type));
     }
 

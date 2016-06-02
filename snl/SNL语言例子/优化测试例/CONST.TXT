@@ -1,0 +1,29 @@
+{测试常表达式优化}
+
+program aa
+
+type  t1=integer;
+var   t1  v1,v2;
+      integer a,b,c;
+char  o1;
+procedure p(integer x; var integer y);
+
+begin
+    x:=x+1 ;
+    y:=y+1 
+end
+begin
+   v1:=10;
+   v2:=26;
+   a:=1;
+   b:=a+1;
+   a:=c;
+   c:=b+5;
+   
+   p(a,b);
+   if  v2 < 3*(4+5)
+   then   v2:= v2+1
+   else 
+	write(o1)	 	 
+   fi
+end.

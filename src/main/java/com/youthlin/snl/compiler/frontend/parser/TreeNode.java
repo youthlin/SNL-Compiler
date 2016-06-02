@@ -10,10 +10,6 @@ public class TreeNode {
     private int width;
     private boolean printed;
 
-    TreeNode() {
-        this("");
-    }
-
     public TreeNode(String value) {
         this(null, value);
     }

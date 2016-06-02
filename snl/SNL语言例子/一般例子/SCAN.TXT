@@ -1,0 +1,10 @@
+program p
+type  t = integer;
+var  t  V1 ;
+     char  v2;
+begin 
+   read(v1);
+   V1:=V1+10;
+   write(v1)
+end.
+   

@@ -1,0 +1,30 @@
+{输入n,r  ; 从前n个自然数中取r个数作组合}
+program combination
+type
+    s=array [1..20] of integer;
+var
+    s  a;
+    integer n,r;
+procedure  com(integer s,j);
+var integer i,k;
+begin
+   i:=s;
+   while i<n+2-j  do
+     a[r+1-j]:=i;
+     if j<2
+     then  k:=1;
+           while k<r+1 do
+             write(a[k]);
+             k:=k+1
+           endwh
+     else  com(i+1,j-1)
+     fi;
+     i:=i+1
+   endwh
+end
+begin
+read(n); {n为组合的界限}
+read(r); {r为组合数}
+com(1,r)
+end.
+          

@@ -1,0 +1,21 @@
+{给出一个错误的程序，测试是否能够检查出来，
+ 并给出错误 提示信息}
+
+program _error
+var integer s;
+    integer t;
+procedure factor(intaeger n;var integer m);
+var integer w;
+begin
+if n=0
+then m:=1
+else 
+  factor(n-1,w);
+  m:=n*w
+fi
+end
+begin
+read(s);
+factor(s,t);
+write(t)
+end. 

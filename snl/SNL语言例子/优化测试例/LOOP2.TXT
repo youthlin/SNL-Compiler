@@ -1,0 +1,37 @@
+{ 循环不变式外提优化的测试程序,有过程调用情形}
+program  pp
+var integer i,n,m,j,k;
+    array [1..10] of integer a;
+procedure q();
+begin
+   write(100)
+end
+
+begin
+   i:=0;
+   j:=0;
+   k:=0;
+   while k<3  do
+      while i<5 do
+      	   m:=10*(5+j);
+           m:=k+5;
+           n:=i;
+           q();        {有过程调用，不优化打开的循环}
+           write(n);
+           i:=i+1
+      endwh;
+      i:=0;
+      k:=k+1
+   endwh;
+
+   write(m);
+   while j<4 do   {可以优化}
+     m:=1+k;
+     j:=j+1
+   endwh;
+   write(m)
+
+end.
+
+    
+ 

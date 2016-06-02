@@ -16,6 +16,7 @@ SNL(Small Nested Language) Compiler.  Maven jUnit Tokenizer Lexer Syntax Parser.
 - 2016-06-01 开始 LL1  
 - 2016-06-02 1.初步完成 LL1  
 - 2016-06-02 2.增加自动识别文件编码。修复标识符结点值错误的 Bug.  
+- 2016-06-02 3.查错，基本上完成了.  
 
 ### 参考书籍
 《编译程序的设计与实现》刘磊 金英 张晶 张荷花 单郸；高等教育出版社，ISBN 978-7-04-014620-7.  

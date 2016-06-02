@@ -15,7 +15,7 @@ import java.util.Scanner;
 public class Lexer {
     private enum State {
         Normal, InId, InNum, InComment, InChar, Error,
-        InAssign, InRange
+        InAssign, InRange, InDot,
     }
 
     private static Logger LOG = LoggerFactory.getLogger(Lexer.class);
@@ -60,9 +60,9 @@ public class Lexer {
             switch (state) {
                 case Normal://region 开始识别
                     LOG.trace("进入Normal状态");
-                    if ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z')) {
+                    if (isAlpha(ch)) {
                         state = State.InId;
-                    } else if (ch >= '0' && ch <= '9') {
+                    } else if (isDigit(ch)) {
                         state = State.InNum;
                     }//region 单字符分界符
                     else if (isBlank(ch)) {
@@ -124,7 +124,8 @@ public class Lexer {
                         sb.deleteCharAt(sb.length() - 1);//把【{】删除
                         state = State.InComment;
                     } else if (ch == '.') {
-                        state = State.InRange;
+                        state = State.InDot;
+//                        state = State.InRange;
                     } else if (ch == '\'') {
                         sb.deleteCharAt(sb.length() - 1);//把【'】删除
                         state = State.InChar;
@@ -183,8 +184,28 @@ public class Lexer {
                     }
                     //endregion
                     break;
-                case InRange://region 下标界限 ..
+                case InDot:
+                    if (isAlpha(ch)) {
+                        unGetChar(ch);
+
+                        sb.deleteCharAt(sb.length() - 1);//把 多读入的字母 删除
+                        token = new Token(line, column, TokenType.DOT, sb.toString());
+                        LOG.debug("已识别Token:" + token);
+                        return token;
+                    }
                     if (ch == '.') {
+
+                        state = State.InRange;
+                        break;
+                    }
+                    token = new Token(line, column, TokenType.EOF, ".");
+                    LOG.trace(sb.toString() + "  " + token);
+                    return token;
+//                    break;
+                case InRange://region 下标界限 ..
+                    if (isDigit(ch)) {
+                        unGetChar(ch);
+                        sb.deleteCharAt(sb.length() - 1);//吧多读入的数字删掉
                         token = new Token(line, column, TokenType.UNDERRANGE, sb.toString());
                         LOG.debug("已识别Token:" + token);
                         return token;
@@ -204,8 +225,8 @@ public class Lexer {
                     //endregion
                     break;
                 case Error://region 错误处理 返回空的Token 记录错误信息
-                    LOG.warn("[错误]在 " + line + "行 " + column + "列");
-                    errors.add("[错误]在 " + line + "行 " + column + "列");
+                    LOG.warn("[Error] Unrecognized token. at " + line + ":" + column);
+                    errors.add("[Error] Unrecognized token. at " + line + ":" + column);
                     token = new Token();
                     return token;
                 //endregion
@@ -215,14 +236,15 @@ public class Lexer {
             ch = getChar();
         }
         //region 文件结束处理
-        if (state == State.InRange) {//文件已结束，且前一个符号是【.】说明程序结束
+        if (state == State.InDot) {//文件已结束，且前一个符号是【.】说明程序结束
             Token token = new Token(line, column, TokenType.EOF, ".");
             LOG.debug("已识别Token:" + token);
             return token;
         }
         if (state != State.Normal) {
             errors.add("[错误]在 " + line + "行 " + column + "列");
-        }//endregion
+        }
+        //endregion
         return null;
     }
 

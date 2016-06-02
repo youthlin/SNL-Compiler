@@ -26,7 +26,7 @@ public class RDParser extends SyntaxParser {
         errors = new ArrayList<>();
         ParseResult result = new ParseResult();
         list = tokenList;
-        if (list.size() == 0) {
+        if (list == null || list.size() == 0) {
             errors.add("No token to read.");
             result.setErrors(errors);
             return result;

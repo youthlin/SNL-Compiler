@@ -11,7 +11,8 @@ import java.util.Map;
  * 非终极符
  */
 public class NonTerminalSymbol extends Symbol {
-    //region
+    //region 非终极符列表
+    //文法开始符可能会在多个地方出现，因此为了设置子树时互不干扰，每次重新new （虽然这里其实也只出现一次）
     public static  NonTerminalSymbol Program (){return  (new NonTerminalSymbol("Program"));}
     public static  NonTerminalSymbol ProgramHead (){return (new NonTerminalSymbol("ProgramHead"));}
     public static  NonTerminalSymbol ProgramName (){return (new NonTerminalSymbol("ProgramName"));}

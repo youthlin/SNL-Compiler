@@ -24,7 +24,7 @@ public class RCLL1ParserTest {
 
     @Before
     public void init() throws IOException {
-        in = RCLL1ParserTest.class.getClassLoader().getResourceAsStream("sd.snl");
+        in = RCLL1ParserTest.class.getClassLoader().getResourceAsStream("test.snl");
         RDParser = new RDParser();
 //        list = getList();
         list = new Lexer().getResult(new InputStreamReader(in)).getTokenList();
@@ -33,7 +33,7 @@ public class RCLL1ParserTest {
 
     @Test
     public void test() throws FileNotFoundException {
-//        ParseResult result = RDParser.parse(in);
+//        ParseResult result = RDParser.parse(list);
         ParseResult result = new LL1Parser().parse(list);
         if (result.isSuccess()) {
             SyntaxTree tree = result.getTree();

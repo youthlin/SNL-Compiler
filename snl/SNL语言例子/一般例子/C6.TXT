@@ -1,0 +1,26 @@
+{并列声明函数之间的调用}
+{输入n，如果n<10,则输出n+10,n,n+10;
+              否则输出n-10,n,n-10}
+program  example
+type w1=integer;
+var  
+     integer b;
+     w1 a;
+procedure sss(integer a);
+begin
+   write(a)
+end
+procedure sd(integer s1;var integer s2); 
+begin
+   if s1<10
+   then s2:=s1+10
+   else s2:=s1-10	
+   fi;
+   sss(s2);
+   sss(a)
+end
+begin      
+   read(a);
+   sd(a,b);
+   sss(b)
+end.

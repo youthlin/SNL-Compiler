@@ -1,5 +1,8 @@
 package com.youthlin.snl.compiler;
 
+import com.youthlin.snl.compiler.frontend.lexer.Lexer;
+import com.youthlin.snl.compiler.frontend.lexer.LexerResult;
+import com.youthlin.snl.compiler.frontend.lexer.Token;
 import com.youthlin.snl.compiler.frontend.parser.LL1.LL1Parser;
 import com.youthlin.snl.compiler.frontend.parser.SyntaxParser;
 import com.youthlin.snl.compiler.frontend.parser.SyntaxTree;
@@ -10,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.util.List;
 
 /**
  * Created by lin on 2016-05-31-031.
@@ -54,7 +58,19 @@ public class SNLc {
             } else parser = new RDParser();
             LOG.debug("参数: Parser=" + defaultParser + ", Encoding=" + defaultEncoding);
 
-            ParseResult result = parser.parse(unicodeReader);
+            Lexer lexer = new Lexer();
+            LexerResult lexerResult = lexer.getResult(unicodeReader);
+            List<Token> list = null;
+            List<String> errors = lexerResult.getErrors();
+            if (errors.size() == 0) {
+                PrintStream out = new PrintStream(arg[0] + ".token.list.txt");
+                list = lexerResult.getTokenList();
+                list.forEach(out::println);
+            } else {
+                errors.forEach(System.err::println);
+                System.exit(1);
+            }
+            ParseResult result = parser.parse(list);
             if (result == null) {
                 System.err.println("获取分析结果错误");
                 System.exit(1);
@@ -63,7 +79,7 @@ public class SNLc {
                 SyntaxTree.print(result.getTree().getRoot(), new PrintStream(arg[0] + ".tree.txt"),
                         "Syntax Tree for source code: " + arg[0] + "(by " + defaultParser + ")", 0);
             } else {
-                System.err.println("RDParser Error.错误列表：");
+                System.err.println(defaultParser + " Parser: parse Error. 错误列表：");
                 result.getErrors().forEach(System.err::println);
             }
         } catch (ParseException e) {
@@ -72,7 +88,7 @@ public class SNLc {
             System.exit(1);
         } catch (FileNotFoundException e) {
             System.err.println("File Not Found.找不到源文件。");
-            e.printStackTrace();
+            help(options);
             System.exit(1);
         } catch (Exception e) {
             e.printStackTrace();
@@ -85,37 +101,8 @@ public class SNLc {
 
     private static void version() {
         System.out.println("SNLc   : SNL(Small Nested Language) Compiler.");
-        System.out.println("Author : Youth．霖");
         System.out.println("Version: 1.0.");
-    }
-
-    /**
-     * 判断文件的编码格式
-     *
-     * @param fileName :file
-     * @return 文件编码格式
-     * @throws Exception
-     */
-    public static String codeString(String fileName) throws Exception {
-        BufferedInputStream bin = new BufferedInputStream(
-                new FileInputStream(fileName));
-        int p = (bin.read() << 8) + bin.read();
-        String code = null;
-
-        switch (p) {
-            case 0xefbb:
-                code = "UTF-8";
-                break;
-            case 0xfffe:
-                code = "Unicode";
-                break;
-            case 0xfeff:
-                code = "UTF-16BE";
-                break;
-            default:
-                code = "GBK";
-        }
-        LOG.debug("File encoding = " + code);
-        return code;
+        System.out.println("Author : Youth．霖");
+        System.out.println("Contact: http://youthlin.com/");
     }
 }

@@ -1,0 +1,39 @@
+{�ݹ���ò���}
+{���ܣ���������n,���n�Ľ׳�}
+program sd
+var integer s;
+    integer t;
+procedure factor(integer n;var integer m);
+var integer w;
+begin
+if n=0
+then m:=1{递归调用测试}
+         {功能：对于输入n,输出n的阶乘}
+         program sd
+         var integer s;
+             integer t;
+         procedure factor(integer n;var integer m);
+         var integer w;
+         begin
+         if n=0
+         then m:=1
+         else
+           factor(n-1,w);
+           m:=n*w
+         fi
+         end
+         begin
+         read(s);
+         factor(s,t);
+         write(t)
+         end.
+else 
+  factor(n-1,w);
+  m:=n*w
+fi
+end
+begin
+read(s);
+factor(s,t);
+write(t)
+end. 

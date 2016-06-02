@@ -1,0 +1,26 @@
+{ 循环不变式外提优化的测试程序1,测试外提}
+program  pp
+var integer i,n,m,j,k;
+    array [1..10] of integer a;
+
+begin
+   i:=0;
+   j:=0;
+   k:=0;
+   while k<3  do
+      while i<5 do
+      	   m:=10*(5+j); {运算提两层}
+           m:=k+5;      {运算提一层}
+           n:=i;
+      
+           write(n);
+           i:=i+1
+      endwh;
+      i:=0;
+      k:=k+1
+   endwh;
+   write(m)
+ end.
+
+    
+ 

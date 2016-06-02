@@ -1,25 +1,22 @@
 package com.youthlin.snl.compiler.frontend.symbol;
 
-import com.sun.org.apache.bcel.internal.generic.RET;
-import com.sun.org.apache.regexp.internal.RE;
 import com.youthlin.snl.compiler.frontend.lexer.Token;
 import com.youthlin.snl.compiler.frontend.lexer.TokenType;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static com.youthlin.snl.compiler.frontend.lexer.TokenType.*;
 import static com.youthlin.snl.compiler.frontend.symbol.NonTerminalSymbol.*;
 import static java.util.Arrays.asList;
-import static java.util.Arrays.copyOf;
 import static java.util.Collections.singletonList;
 
 /**
  * Created by lin on 2016-06-01-001.
  * 所有终极符
  */
+@SuppressWarnings("unused")
 public enum NON_TERMINAL_SYMBOLS {
+    //region 非终极符列表,根据展望符返回相应产生式右部
     Program(new NonTerminalSymbol("Program")) {
         @Override
         public List<Symbol> find(Token predict) {
@@ -149,7 +146,8 @@ public enum NON_TERMINAL_SYMBOLS {
             TokenType pre = predict.getType();
             if (pre == ARRAY)
                 return asList(new TerminalSymbol(ARRAY), new TerminalSymbol(LMIDPAREN), Low(),
-                        new TerminalSymbol(UNDERRANGE), Top(), new TerminalSymbol(OF), BaseType());
+                        new TerminalSymbol(UNDERRANGE), Top(), new TerminalSymbol(RMIDPAREN),
+                        new TerminalSymbol(OF), BaseType());
             return null;
         }
     },
@@ -482,8 +480,14 @@ public enum NON_TERMINAL_SYMBOLS {
         @Override
         public List<Symbol> find(Token predict) {
             TokenType pre = predict.getType();
-            if (pre == ASSIGN) return singletonList(AssignmentRest());
-            if (pre == LPAREN) return singletonList(CallStmRest());
+            switch (pre) {
+                case LMIDPAREN:
+                case DOT:
+                case ASSIGN:
+                    return singletonList(AssignmentRest());
+                case LPAREN:
+                    return singletonList(CallStmRest());
+            }
             return null;
         }
     },
@@ -609,7 +613,7 @@ public enum NON_TERMINAL_SYMBOLS {
         @Override
         public List<Symbol> find(Token predict) {
             TokenType pre = predict.getType();
-            if (pre == RPAREN || pre == INTC || pre == ID) return asList(Term(), OtherTerm());
+            if (pre == LPAREN || pre == INTC || pre == ID) return asList(Term(), OtherTerm());
             return null;
         }
     },
@@ -642,7 +646,7 @@ public enum NON_TERMINAL_SYMBOLS {
         @Override
         public List<Symbol> find(Token predict) {
             TokenType pre = predict.getType();
-            if (pre == RPAREN || pre == INTC || pre == ID) return asList(Factor(), OtherFactor());
+            if (pre == LPAREN || pre == INTC || pre == ID) return asList(Factor(), OtherFactor());
             return null;
         }
     },
@@ -786,6 +790,8 @@ public enum NON_TERMINAL_SYMBOLS {
             return null;
         }
     };
+
+    //endregion
 
     NON_TERMINAL_SYMBOLS(NonTerminalSymbol v) {
         this.value = v;

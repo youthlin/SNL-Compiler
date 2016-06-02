@@ -100,31 +100,16 @@ public class Token {
         return line;
     }
 
-    public void setLine(int line) {
-        this.line = line;
-    }
-
     public int getColumn() {
         return column;
     }
 
-    public void setColumn(int column) {
-        this.column = column;
-    }
 
     public TokenType getType() {
         return type;
     }
 
-    public void setType(TokenType type) {
-        this.type = type;
-    }
-
     public String getValue() {
         return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
     }
 }

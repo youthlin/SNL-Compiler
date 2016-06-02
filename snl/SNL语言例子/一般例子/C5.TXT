@@ -1,0 +1,40 @@
+{并列过程声明测试程序}
+{输入三个整数，如果小于10,则加上10；否则，减去10}
+program  example
+type w1=integer;
+     w2=record
+          integer  x;
+          integer  y,z;
+        end;
+var  integer c; 
+     integer b;
+     w1 a;
+     w2 d;
+procedure sd(integer s1;var integer s2); 
+begin
+   if s1<10
+   then s2:=s1+10
+   else s2:=s1-10	
+   fi
+end
+procedure sss(integer a);
+begin
+   write(a)
+end
+begin      
+   read(a);
+   sd(a,c);
+   d.x:=c;
+   b:=d.x;
+   sss(b);
+   read(a);
+   sd(a,c);
+   d.y:=c;
+   b:=d.y;
+   sss(b);
+   read(a);
+   sd(a,c);
+   d.z:=c;
+   b:=d.z;
+   sss(b)
+end.

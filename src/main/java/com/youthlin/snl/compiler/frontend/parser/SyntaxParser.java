@@ -98,6 +98,7 @@ public abstract class SyntaxParser {
             if (type.equals(expected)) {
                 LOG.trace("已匹配" + input);
                 node = node(expected.getStr());
+                //标识符，数字，字符，值设为正确的值，而不是id,intc,character
                 switch (type) {
                     case ID:
                     case INTC:
@@ -105,7 +106,7 @@ public abstract class SyntaxParser {
                         node = node(input.getValue());
                 }
             } else
-                errors.add("Unexpected token near |" + input.getValue() + "|. `"
+                errors.add("Unexpected token near `" + input.getValue() + "`. `"
                         + expected.getStr() + "` expected. "
                         + " at [" + input.getLine() + ":" + input.getColumn() + "]");
         } else {
@@ -116,7 +117,7 @@ public abstract class SyntaxParser {
 
     protected void error(TokenType... types) {
         LOG.warn("匹配错误" + peekToken());
-        StringBuilder sb = new StringBuilder("Unexpected token near |" + lastRead.getValue() + "|. |");
+        StringBuilder sb = new StringBuilder("Unexpected token near `" + lastRead.getValue() + "`. |");
         for (TokenType t : types) {
             sb.append(t.getStr());
             sb.append("|");
