@@ -79,7 +79,10 @@ public class LL1Parser extends SyntaxParser {
             LOG.warn("当前格局应为 栈空，输入流只剩结束符");
             errors.add("Source code too long.");
         }
-
+        if (peekToken().getType() != TokenType.ERROR) {
+            LOG.warn("当前格局应为 栈空，输入流[只]剩结束符");
+            errors.add("Source code too long.");
+        }
         result.setTree(new SyntaxTree(root));
         result.setErrors(errors);
         return result;

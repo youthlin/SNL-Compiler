@@ -79,7 +79,7 @@ public class SNLc {
                 SyntaxTree.print(result.getTree().getRoot(), new PrintStream(arg[0] + ".tree.txt"),
                         "Syntax Tree for source code: " + arg[0] + "(by " + defaultParser + ")", 0);
             } else {
-                System.err.println(defaultParser + " Parser: parse Error. 错误列表：");
+                System.err.println(defaultParser + " Parser: parse Error. Error List:");
                 result.getErrors().forEach(System.err::println);
             }
         } catch (ParseException e) {
