@@ -1,4 +1,4 @@
-package com.youthlin.snl.compiler.frontend.symbol;
+package com.youthlin.snl.compiler.frontend.syntax.symbol;
 
 import com.youthlin.snl.compiler.frontend.lexer.Token;
 import com.youthlin.snl.compiler.frontend.lexer.TokenType;
@@ -6,7 +6,7 @@ import com.youthlin.snl.compiler.frontend.lexer.TokenType;
 import java.util.List;
 
 import static com.youthlin.snl.compiler.frontend.lexer.TokenType.*;
-import static com.youthlin.snl.compiler.frontend.symbol.NonTerminalSymbol.*;
+import static com.youthlin.snl.compiler.frontend.syntax.symbol.NonTerminalSymbol.*;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 

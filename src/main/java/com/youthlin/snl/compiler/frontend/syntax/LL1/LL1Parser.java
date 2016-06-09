@@ -1,14 +1,14 @@
-package com.youthlin.snl.compiler.frontend.parser.LL1;
+package com.youthlin.snl.compiler.frontend.syntax.LL1;
 
 import com.youthlin.snl.compiler.frontend.lexer.Token;
 import com.youthlin.snl.compiler.frontend.lexer.TokenType;
-import com.youthlin.snl.compiler.frontend.parser.SyntaxParser;
-import com.youthlin.snl.compiler.frontend.parser.ParseResult;
-import com.youthlin.snl.compiler.frontend.parser.SyntaxTree;
-import com.youthlin.snl.compiler.frontend.parser.TreeNode;
-import com.youthlin.snl.compiler.frontend.symbol.NonTerminalSymbol;
-import com.youthlin.snl.compiler.frontend.symbol.Symbol;
-import com.youthlin.snl.compiler.frontend.symbol.TerminalSymbol;
+import com.youthlin.snl.compiler.frontend.syntax.SyntaxParser;
+import com.youthlin.snl.compiler.frontend.syntax.ParseResult;
+import com.youthlin.snl.compiler.frontend.syntax.SyntaxTree;
+import com.youthlin.snl.compiler.frontend.syntax.TreeNode;
+import com.youthlin.snl.compiler.frontend.syntax.symbol.NonTerminalSymbol;
+import com.youthlin.snl.compiler.frontend.syntax.symbol.Symbol;
+import com.youthlin.snl.compiler.frontend.syntax.symbol.TerminalSymbol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

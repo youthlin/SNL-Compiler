@@ -1,6 +1,6 @@
-package com.youthlin.snl.compiler.frontend.symbol;
+package com.youthlin.snl.compiler.frontend.syntax.symbol;
 
-import com.youthlin.snl.compiler.frontend.parser.TreeNode;
+import com.youthlin.snl.compiler.frontend.syntax.TreeNode;
 
 /**
  * Created by lin on 2016-06-01-001.

@@ -1,15 +1,12 @@
-package com.youthlin.snl.compiler.frontend.parser.LL1;
+package com.youthlin.snl.compiler.frontend.syntax.LL1;
 
 import com.youthlin.snl.compiler.frontend.lexer.Token;
-import com.youthlin.snl.compiler.frontend.symbol.NON_TERMINAL_SYMBOLS;
-import com.youthlin.snl.compiler.frontend.symbol.NonTerminalSymbol;
-import com.youthlin.snl.compiler.frontend.symbol.Symbol;
-import com.youthlin.snl.compiler.frontend.symbol.TerminalSymbol;
+import com.youthlin.snl.compiler.frontend.syntax.symbol.NON_TERMINAL_SYMBOLS;
+import com.youthlin.snl.compiler.frontend.syntax.symbol.NonTerminalSymbol;
+import com.youthlin.snl.compiler.frontend.syntax.symbol.Symbol;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.List;
 
 /**

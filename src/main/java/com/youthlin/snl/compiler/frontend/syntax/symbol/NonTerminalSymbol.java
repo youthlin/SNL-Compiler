@@ -1,10 +1,6 @@
-package com.youthlin.snl.compiler.frontend.symbol;
+package com.youthlin.snl.compiler.frontend.syntax.symbol;
 
-import com.youthlin.snl.compiler.frontend.lexer.Token;
-import com.youthlin.snl.compiler.frontend.parser.TreeNode;
-
-import java.util.List;
-import java.util.Map;
+import com.youthlin.snl.compiler.frontend.syntax.TreeNode;
 
 /**
  * Created by lin on 2016-06-01-001.

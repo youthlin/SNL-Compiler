@@ -1,4 +1,4 @@
-package com.youthlin.snl.compiler.frontend.parser;
+package com.youthlin.snl.compiler.frontend.syntax;
 
 import java.io.PrintStream;
 import java.util.*;

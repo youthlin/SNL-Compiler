@@ -1,4 +1,4 @@
-package com.youthlin.snl.compiler.frontend.parser;
+package com.youthlin.snl.compiler.frontend.syntax;
 
 import com.youthlin.snl.compiler.frontend.lexer.Lexer;
 import com.youthlin.snl.compiler.frontend.lexer.LexerResult;
@@ -8,8 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;

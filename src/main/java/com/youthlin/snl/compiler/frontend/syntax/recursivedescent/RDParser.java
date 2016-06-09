@@ -1,9 +1,9 @@
-package com.youthlin.snl.compiler.frontend.parser.recursivedescent;
+package com.youthlin.snl.compiler.frontend.syntax.recursivedescent;
 
-import com.youthlin.snl.compiler.frontend.parser.SyntaxParser;
-import com.youthlin.snl.compiler.frontend.parser.ParseResult;
-import com.youthlin.snl.compiler.frontend.parser.SyntaxTree;
-import com.youthlin.snl.compiler.frontend.parser.TreeNode;
+import com.youthlin.snl.compiler.frontend.syntax.SyntaxParser;
+import com.youthlin.snl.compiler.frontend.syntax.ParseResult;
+import com.youthlin.snl.compiler.frontend.syntax.SyntaxTree;
+import com.youthlin.snl.compiler.frontend.syntax.TreeNode;
 import com.youthlin.snl.compiler.frontend.lexer.Token;
 import com.youthlin.snl.compiler.frontend.lexer.TokenType;
 import org.slf4j.Logger;

@@ -5,10 +5,10 @@ package com.youthlin.snl.compiler.frontend.lexer;
  * Token定义
  */
 public class Token {
-    int line;
-    int column;
-    TokenType type;
-    String value;
+    int line;       //行
+    int column;     //列
+    TokenType type; //类型
+    String value;   //含义
 
     public Token() {
         this(TokenType.EMPTY);

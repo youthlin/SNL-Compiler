@@ -210,6 +210,19 @@ public class Lexer {
                         LOG.debug("已识别Token:" + token);
                         return token;
                     }
+                    state = State.Error;//2016-06-09添加。
+//                     不加上会导致array [1..] of integer a;类似的语句..]都作为一个下标符号
+//                    `..] of integer a;
+//                    procedure f(integer x,y;var integer z);
+//                    begin
+//                    z:=x+y+z;
+//                    write(x);
+//                    write(y);
+//                    write(z)
+//                    end
+//
+//                            begin
+//                    x:=|UNDERRANGE|14:8`
                     //endregion
                     break;
                 case InChar://region 识别引号括起来的字符

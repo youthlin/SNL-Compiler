@@ -1,11 +1,11 @@
-package com.youthlin.snl.compiler.frontend.parser.recursivedescent;
+package com.youthlin.snl.compiler.frontend.syntax.recursivedescent;
 
 import com.youthlin.snl.compiler.frontend.lexer.Lexer;
 import com.youthlin.snl.compiler.frontend.lexer.Token;
 import com.youthlin.snl.compiler.frontend.lexer.TokenType;
-import com.youthlin.snl.compiler.frontend.parser.LL1.LL1Parser;
-import com.youthlin.snl.compiler.frontend.parser.SyntaxTree;
-import com.youthlin.snl.compiler.frontend.parser.ParseResult;
+import com.youthlin.snl.compiler.frontend.syntax.LL1.LL1Parser;
+import com.youthlin.snl.compiler.frontend.syntax.SyntaxTree;
+import com.youthlin.snl.compiler.frontend.syntax.ParseResult;
 import org.junit.Before;
 import org.junit.Test;
 

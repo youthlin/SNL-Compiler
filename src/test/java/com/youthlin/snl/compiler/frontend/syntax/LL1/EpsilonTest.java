@@ -1,7 +1,7 @@
-package com.youthlin.snl.compiler.frontend.parser.LL1;
+package com.youthlin.snl.compiler.frontend.syntax.LL1;
 
 import com.youthlin.snl.compiler.frontend.lexer.Token;
-import com.youthlin.snl.compiler.frontend.symbol.TerminalSymbol;
+import com.youthlin.snl.compiler.frontend.syntax.symbol.TerminalSymbol;
 import org.junit.Assert;
 import org.junit.Test;
 

@@ -1,4 +1,4 @@
-package com.youthlin.snl.compiler.frontend.parser;
+package com.youthlin.snl.compiler.frontend.syntax;
 
 /**
  * Created by lin on 2016-05-28-028.
