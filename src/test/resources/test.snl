@@ -4,7 +4,7 @@ type t1=integer;
      t2=t1;
 var  integer v1,v2,c;
      t2  v3;
-     array [2..100] of integer  a;
+     array [2..100a] of integer  a;
      record
         array [1..10]  of  integer  b;
 	integer  v4;

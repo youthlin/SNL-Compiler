@@ -1,6 +1,7 @@
 package com.youthlin.snl.compiler.frontend.syntax.recursivedescent;
 
 import com.youthlin.snl.compiler.frontend.lexer.Lexer;
+import com.youthlin.snl.compiler.frontend.lexer.LexerResult;
 import com.youthlin.snl.compiler.frontend.lexer.Token;
 import com.youthlin.snl.compiler.frontend.lexer.TokenType;
 import com.youthlin.snl.compiler.frontend.syntax.LL1.LL1Parser;
@@ -18,23 +19,26 @@ import java.util.List;
  * 测试递归下降
  */
 public class RCLL1ParserTest {
-    private RDParser RDParser;
-    private InputStream in;
     private List<Token> list;
+    private LexerResult result;
 
     @Before
     public void init() throws IOException {
-        in = RCLL1ParserTest.class.getClassLoader().getResourceAsStream("test.snl");
-        RDParser = new RDParser();
-//        list = getList();
-        list = new Lexer().getResult(new InputStreamReader(in)).getTokenList();
+        InputStream in = RCLL1ParserTest.class.getClassLoader().getResourceAsStream("test.snl");
+        result = new Lexer().getResult(new InputStreamReader(in));
+        list = result.getTokenList();
+
         for (Token t : list) System.out.println(t);
     }
 
     @Test
     public void test() throws FileNotFoundException {
-//        ParseResult result = RDParser.parse(list);
+        if (result.getErrors().size() > 0) {
+            result.getErrors().forEach(System.out::println);
+            return;
+        }
         ParseResult result = new LL1Parser().parse(list);
+//        ParseResult result = new RDParser().parse(list);
         if (result.isSuccess()) {
             SyntaxTree tree = result.getTree();
             System.out.println();
@@ -46,13 +50,4 @@ public class RCLL1ParserTest {
         }
     }
 
-    private List<Token> getList() {
-        List<Token> l = new ArrayList<>();
-        l.add(new Token("a"));
-        l.add(new Token("a"));
-        l.add(new Token("d"));
-        l.add(new Token("d"));
-        l.add(new Token(TokenType.EOF));
-        return l;
-    }
 }

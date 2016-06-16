@@ -185,23 +185,27 @@ public class Lexer {
                     //endregion
                     break;
                 case InDot:
-                    if (isAlpha(ch)) {
+                    if (isAlpha(ch)) {//域的点号a.b
                         unGetChar(ch);
-
                         sb.deleteCharAt(sb.length() - 1);//把 多读入的字母 删除
                         token = new Token(line, column, TokenType.DOT, sb.toString());
                         LOG.debug("已识别Token:" + token);
                         return token;
                     }
-                    if (ch == '.') {
-
+                    if (ch == '.') {//下标..
                         state = State.InRange;
                         break;
                     }
-                    token = new Token(line, column, TokenType.EOF, ".");
-                    LOG.trace(sb.toString() + "  " + token);
-                    return token;
-//                    break;
+                    while (isBlank(ch))ch=getChar();
+                    if (ch == -1) {//EOF
+                        token = new Token(line, column, TokenType.EOF, ".");
+                        LOG.trace(sb.toString() + "  " + token);
+                        return token;
+                    }
+                    LOG.trace("错误的点号");
+                    unGetChar(ch);//报错
+                    state = State.Error;
+                    break;
                 case InRange://region 下标界限 ..
                     if (isDigit(ch)) {
                         unGetChar(ch);
@@ -238,8 +242,8 @@ public class Lexer {
                     //endregion
                     break;
                 case Error://region 错误处理 返回空的Token 记录错误信息
-                    LOG.warn("[Error] Unrecognized token. at " + line + ":" + column);
-                    errors.add("[Error] Unrecognized token. at " + line + ":" + column);
+                    LOG.warn("[Error] Unrecognized token. near " + line + ":" + column);
+                    errors.add("[Error] Unrecognized token. near " + line + ":" + column);
                     token = new Token();
                     return token;
                 //endregion
@@ -280,6 +284,7 @@ public class Lexer {
 
     private void unGetChar(int ch) {
         getMeFirst = ch;
+        column--;
     }
 
     private boolean isAlpha(int ch) {

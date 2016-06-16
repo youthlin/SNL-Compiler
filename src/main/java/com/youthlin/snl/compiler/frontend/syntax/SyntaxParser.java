@@ -90,7 +90,7 @@ public abstract class SyntaxParser {
 
     protected TreeNode match(TokenType expected) {
         Token input = getToken();
-        TreeNode node = null;
+        TreeNode node = node();
         if (input != null) {
             TokenType type = input.getType();
             if (type.equals(expected)) {
@@ -103,10 +103,15 @@ public abstract class SyntaxParser {
                     case CHARACTER:
                         node = node(input.getValue());
                 }
-            } else
+                LOG.trace("node.value="+node.getValue());
+            } else{
                 errors.add("Unexpected token near `" + input.getValue() + "`. `"
                         + expected.getStr() + "` expected. "
                         + " at [" + input.getLine() + ":" + input.getColumn() + "]");
+                LOG.trace("Unexpected token near `" + input.getValue() + "`. `"
+                        + expected.getStr() + "` expected. "
+                        + " at [" + input.getLine() + ":" + input.getColumn() + "]");
+            }
         } else {
             errors.add("Unexpected EOF. No more tokens at input stream.");
         }

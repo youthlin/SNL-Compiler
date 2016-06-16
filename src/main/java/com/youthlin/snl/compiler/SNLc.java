@@ -51,13 +51,14 @@ public class SNLc {
             //http://akini.mbnet.fi/java/unicodereader/
             UnicodeReader unicodeReader = new UnicodeReader(in, defaultEncoding);
 
+            //语法分析器
             SyntaxParser parser;
             if (cli.hasOption("l")) {
                 parser = new LL1Parser();
                 defaultParser = "LL1";
             } else parser = new RDParser();
             LOG.debug("参数: Parser=" + defaultParser + ", Encoding=" + defaultEncoding);
-
+            //词法分析器
             Lexer lexer = new Lexer();
             LexerResult lexerResult = lexer.getResult(unicodeReader);
             List<Token> list = null;
@@ -70,6 +71,7 @@ public class SNLc {
                 errors.forEach(System.err::println);
                 System.exit(1);
             }
+            //无词法错误
             ParseResult result = parser.parse(list);
             if (result == null) {
                 System.err.println("获取分析结果错误");
