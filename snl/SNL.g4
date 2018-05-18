@@ -7,7 +7,7 @@
  * 请只用于学习目的
  * 语法转写: Youth．霖 https://youthlin.com
  *
- * FOR STUDY ONLY
+ * FOR STUDY USE ONLY
  * POWERED BY JLU
  *
  */
